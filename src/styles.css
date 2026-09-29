@@ -196,8 +196,7 @@ code {
   justify-content: space-between;
   gap: 12px;
   height: var(--topbar);
-  padding: 0 16px;
-  padding-top: env(safe-area-inset-top);
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
   box-sizing: content-box;
   background: rgba(3, 3, 3, 0.92);
   backdrop-filter: blur(12px);
@@ -267,7 +266,7 @@ code {
 .content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 24px 96px;
+  padding: 16px max(24px, env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
 }
 
 .chips {
@@ -1075,7 +1074,7 @@ code {
   min-height: 100dvh;
   max-width: 480px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: calc(32px + env(safe-area-inset-top)) 24px calc(32px + env(safe-area-inset-bottom));
   text-align: center;
   background: radial-gradient(ellipse at top, rgba(255, 78, 106, 0.18), transparent 60%);
 }
@@ -1103,11 +1102,12 @@ code {
 
 @media (max-width: 720px) {
   .content {
-    padding: 8px 12px 96px;
+    padding: 8px max(12px, env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   }
 
   .topbar {
-    padding: 0 8px 0 12px;
+    padding-right: max(8px, env(safe-area-inset-right));
+    padding-left: max(12px, env(safe-area-inset-left));
     height: 56px;
   }
 
@@ -1174,8 +1174,8 @@ code {
   .dialog,
   .dialog--wide {
     max-width: none;
-    max-height: 92vh;
-    max-height: 92dvh;
+    max-height: calc(100vh - env(safe-area-inset-top) - 16px);
+    max-height: calc(100dvh - env(safe-area-inset-top) - 16px);
     border-radius: 16px 16px 0 0;
     border-bottom: 0;
     padding-bottom: env(safe-area-inset-bottom);
