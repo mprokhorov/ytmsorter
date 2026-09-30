@@ -12,7 +12,7 @@ import { PlaylistView } from './ui/PlaylistView'
 import { ExpiredBanner, Unconfigured, Welcome } from './ui/Screens'
 import { SettingsDialog } from './ui/SettingsDialog'
 import { TransferDialog } from './ui/TransferDialog'
-import { dialog, tab, toast } from './ui/ui'
+import { dialog, supportsViewTransitions, tab, toast } from './ui/ui'
 
 let started = false
 
@@ -73,7 +73,9 @@ export function App() {
       <InterruptedBanner />
       <div class="content">
         <Tabs />
-        {tab.value === 'archive' ? <ArchiveView /> : <PlaylistView key={tab.value} role={tab.value} />}
+        <div key={tab.value} class={supportsViewTransitions ? 'panel' : 'panel panel--enter'}>
+          {tab.value === 'archive' ? <ArchiveView /> : <PlaylistView role={tab.value} />}
+        </div>
       </div>
       <Dialogs />
       <JobDialog />

@@ -269,10 +269,96 @@ code {
   padding: 16px max(24px, env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
 }
 
+.topbar {
+  view-transition-name: topbar;
+}
+
+::view-transition-group(root) {
+  animation-duration: 0.28s;
+}
+
+::view-transition-old(root) {
+  animation: 0.16s cubic-bezier(0.4, 0, 1, 1) both nav-out-forward;
+}
+
+::view-transition-new(root) {
+  animation: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s both nav-in-forward;
+}
+
+html[data-nav='back']::view-transition-old(root) {
+  animation-name: nav-out-back;
+}
+
+html[data-nav='back']::view-transition-new(root) {
+  animation-name: nav-in-back;
+}
+
+@keyframes nav-out-forward {
+  to {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+}
+
+@keyframes nav-in-forward {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
+@keyframes nav-out-back {
+  to {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
+@keyframes nav-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+}
+
+.panel--enter {
+  animation: panel-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  .panel--enter {
+    animation: none;
+  }
+
+  .cover img {
+    transition: none;
+  }
+}
+
+.tabs-bar {
+  position: sticky;
+  top: calc(var(--topbar) + env(safe-area-inset-top) + 1px);
+  z-index: 15;
+  margin: 0 0 16px;
+  padding: 8px 0;
+  background: rgba(3, 3, 3, 0.94);
+  box-shadow: 0 0 0 100vmax rgba(3, 3, 3, 0.94);
+  clip-path: inset(0 -100vmax);
+  view-transition-name: tabs;
+}
+
 .chips {
   display: flex;
   gap: 12px;
-  margin: 8px 0 24px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -447,8 +533,6 @@ code {
   padding: 8px 8px 8px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 4px;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 64px;
   transition: background 0.1s;
 }
 
@@ -569,6 +653,12 @@ code {
   height: 100%;
   object-fit: cover;
   object-position: center;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+}
+
+.cover.is-loaded img {
+  opacity: 1;
 }
 
 .cover__placeholder {
@@ -799,8 +889,6 @@ code {
   padding: 6px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   counter-increment: move;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 49px;
 }
 
 .move::before {
@@ -1105,10 +1193,13 @@ code {
     padding: 8px max(12px, env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   }
 
+  :root {
+    --topbar: 56px;
+  }
+
   .topbar {
     padding-right: max(8px, env(safe-area-inset-right));
     padding-left: max(12px, env(safe-area-inset-left));
-    height: 56px;
   }
 
   .topbar__brand span {

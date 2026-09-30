@@ -20,9 +20,35 @@ export const toast = signal<{ text: string; error?: boolean } | null>(null)
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined
 
+const TAB_ORDER: readonly Tab[] = ['tracks', 'music', 'archive']
+const scrollByTab: Partial<Record<Tab, number>> = {}
+
+export const supportsViewTransitions = typeof document !== 'undefined' && 'startViewTransition' in document
+
+function reducedMotion(): boolean {
+  return typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function afterRender(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0))
+}
+
 export function setTab(t: Tab): void {
-  tab.value = t
-  save(TAB_KEY, t)
+  const from = tab.value
+  if (t === from) return
+  scrollByTab[from] = window.scrollY
+  const apply = async () => {
+    tab.value = t
+    save(TAB_KEY, t)
+    await afterRender()
+    window.scrollTo(0, scrollByTab[t] ?? 0)
+  }
+  if (!supportsViewTransitions || reducedMotion()) {
+    apply()
+    return
+  }
+  document.documentElement.dataset.nav = TAB_ORDER.indexOf(t) > TAB_ORDER.indexOf(from) ? 'forward' : 'back'
+  document.startViewTransition(apply)
 }
 
 export function showToast(text: string, error = false): void {
