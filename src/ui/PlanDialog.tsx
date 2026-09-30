@@ -10,7 +10,7 @@ import { isWritable } from '../state/settings'
 import { Dialog } from './Dialog'
 import { count, MOVES, num, plural, UNITS } from './format'
 import { Icon } from './icons'
-import { PlanList, PlanMap, type PlanRow } from './PlanView'
+import { PlanColumns, type PlanRow } from './PlanView'
 import { dialog, ROLE_LABEL } from './ui'
 
 export function QuotaSummary({ cost, steps, perStep, label }: { cost: number; steps: number; perStep: number; label: string }) {
@@ -107,8 +107,7 @@ export function PlanDialog({ role }: { role: Role }) {
         <>
           <QuotaSummary cost={cost} steps={plan.moves.length} perStep={COST_WRITE} label={plural(plan.moves.length, MOVES)} />
           <ApplyGuard ids={[state.id]} />
-          <PlanMap rows={plan.rows} />
-          <PlanList rows={plan.rows} role={role} />
+          <PlanColumns rows={plan.rows} role={role} />
         </>
       )}
     </Dialog>

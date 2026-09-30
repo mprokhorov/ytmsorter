@@ -1,6 +1,7 @@
 import type { ComponentChildren } from 'preact'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useRef } from 'preact/hooks'
 import { Icon } from './icons'
+import { onBlankTap, scrollToTop } from './ui'
 
 interface Props {
   title: ComponentChildren
@@ -21,6 +22,7 @@ function lockPageScroll(): () => void {
 }
 
 export function Dialog({ title, subtitle, onClose, children, footer, wide }: Props) {
+  const body = useRef<HTMLDivElement>(null)
   useEffect(lockPageScroll, [])
   useEffect(() => {
     if (!onClose) return
@@ -31,7 +33,7 @@ export function Dialog({ title, subtitle, onClose, children, footer, wide }: Pro
   return (
     <div class="overlay" onClick={e => e.target === e.currentTarget && onClose?.()}>
       <div class={`dialog ${wide ? 'dialog--wide' : ''}`} role="dialog" aria-modal="true">
-        <header class="dialog__header">
+        <header class="dialog__header" onClick={onBlankTap(() => body.current && scrollToTop(body.current))}>
           <div>
             <h2 class="dialog__title">{title}</h2>
             {subtitle && <div class="dialog__subtitle">{subtitle}</div>}
@@ -42,7 +44,9 @@ export function Dialog({ title, subtitle, onClose, children, footer, wide }: Pro
             </button>
           )}
         </header>
-        <div class="dialog__body">{children}</div>
+        <div ref={body} class="dialog__body">
+          {children}
+        </div>
         {footer && <footer class="dialog__footer">{footer}</footer>}
       </div>
     </div>

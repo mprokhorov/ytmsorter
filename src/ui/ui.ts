@@ -33,6 +33,16 @@ function afterRender(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }
 
+export function scrollToTop(target: Element | Window = window): void {
+  target.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' })
+}
+
+export function onBlankTap(action: () => void) {
+  return (e: MouseEvent) => {
+    if (!(e.target as Element).closest('button, a, input, select, textarea, [role="menu"]')) action()
+  }
+}
+
 export function setTab(t: Tab): void {
   const from = tab.value
   if (t === from) return
