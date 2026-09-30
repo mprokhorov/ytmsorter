@@ -1,7 +1,5 @@
 import { computed, signal } from '@preact/signals'
-import { authStatus, hasValidToken, markExpired } from '../auth/token'
 import { listMyPlaylists, listPlaylistItems, type PlaylistResource } from '../api/youtube'
-import { AUTO_REFRESH_MS } from '../config'
 import { toItem } from '../domain/item'
 import type { Item, Role } from '../domain/types'
 import { rememberAndArchive } from './library'
@@ -118,14 +116,12 @@ export async function refreshAll(): Promise<void> {
   await Promise.all(ROLES.map(refreshRole))
 }
 
-export function autoRefresh(): void {
-  if (busy.value || document.visibilityState !== 'visible' || authStatus.value !== 'active') return
-  if (!hasValidToken()) return markExpired()
+export async function loadNeverLoaded(): Promise<void> {
   syncSelection()
-  const now = Date.now()
-  const stale = ROLES.filter(r => {
-    const s = playlists.value[r]
-    return s && !s.loading && (!s.loadedAt || now - s.loadedAt > AUTO_REFRESH_MS)
-  })
-  stale.forEach(refreshRole)
+  await Promise.all(ROLES.filter(r => playlists.value[r] && !playlists.value[r]!.loadedAt).map(refreshRole))
+}
+
+export async function refreshThenOpen(roles: readonly Role[], open: () => void): Promise<void> {
+  await Promise.all(roles.map(refreshRole))
+  if (roles.every(r => playlists.value[r] && !playlists.value[r]!.error)) open()
 }

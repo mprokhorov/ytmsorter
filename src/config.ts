@@ -4,4 +4,3 @@ export const API_BASE = 'https://www.googleapis.com/youtube/v3'
 export const DAILY_QUOTA = 10000
 export const COST_LIST = 1
 export const COST_WRITE = 50
-export const AUTO_REFRESH_MS = 60_000

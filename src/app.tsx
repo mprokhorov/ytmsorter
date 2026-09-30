@@ -1,7 +1,7 @@
 import { effect } from '@preact/signals'
 import { useEffect } from 'preact/hooks'
 import { authStatus, initAuth } from './auth/token'
-import { busy, autoRefresh, loadMyPlaylists, myPlaylists, refreshAll } from './state/playlists'
+import { busy, loadMyPlaylists, loadNeverLoaded, myPlaylists } from './state/playlists'
 import { tickQuota } from './state/quota'
 import { ArchiveForm } from './ui/ArchiveForm'
 import { ArchiveView } from './ui/ArchiveView'
@@ -20,7 +20,7 @@ effect(() => {
   if (authStatus.value !== 'active' || started) return
   started = true
   if (!myPlaylists.value) loadMyPlaylists()
-  refreshAll()
+  loadNeverLoaded()
 })
 
 effect(() => {
@@ -51,17 +51,12 @@ function Toast() {
 export function App() {
   useEffect(() => {
     initAuth()
-    const onVisible = () => autoRefresh()
     const onUnload = (e: BeforeUnloadEvent) => {
       if (busy.value) e.preventDefault()
     }
-    document.addEventListener('visibilitychange', onVisible)
-    window.addEventListener('focus', onVisible)
     window.addEventListener('beforeunload', onUnload)
     const timer = setInterval(tickQuota, 60_000)
     return () => {
-      document.removeEventListener('visibilitychange', onVisible)
-      window.removeEventListener('focus', onVisible)
       window.removeEventListener('beforeunload', onUnload)
       clearInterval(timer)
     }
