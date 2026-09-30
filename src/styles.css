@@ -348,17 +348,25 @@ html[data-nav='back']::view-transition-new(root) {
   position: sticky;
   top: calc(var(--topbar) + env(safe-area-inset-top) + 1px);
   z-index: 15;
-  margin: 0 0 16px;
-  padding: 8px 0;
-  background: rgba(3, 3, 3, 0.94);
-  box-shadow: 0 0 0 100vmax rgba(3, 3, 3, 0.94);
-  clip-path: inset(0 -100vmax);
+  padding: 16px 0 8px;
+  background: var(--bg);
   view-transition-name: tabs;
+}
+
+::view-transition-old(tabs) {
+  display: none;
+}
+
+::view-transition-new(tabs) {
+  animation: none;
 }
 
 .chips {
   display: flex;
   gap: 12px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 max(24px, env(safe-area-inset-right)) 0 max(24px, env(safe-area-inset-left));
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -1189,6 +1197,14 @@ html[data-nav='back']::view-transition-new(root) {
 }
 
 @media (max-width: 720px) {
+  .tabs-bar {
+    padding-top: 8px;
+  }
+
+  .chips {
+    padding: 0 max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left));
+  }
+
   .content {
     padding: 8px max(12px, env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   }

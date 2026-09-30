@@ -52,14 +52,14 @@ export function Tabs() {
   ]
   return (
     <div class="tabs-bar">
-    <nav class="chips" role="tablist">
-      {tabs.map(t => (
-        <button key={t.id} role="tab" aria-selected={tab.value === t.id} class={`chip${tab.value === t.id ? ' is-active' : ''}`} onClick={() => setTab(t.id)}>
-          {t.label}
-          {t.count !== undefined && <span class="chip__count">{num(t.count)}</span>}
-        </button>
-      ))}
-    </nav>
+      <nav class="chips" role="tablist">
+        {tabs.map(t => (
+          <button key={t.id} role="tab" aria-selected={tab.value === t.id} class={`chip${tab.value === t.id ? ' is-active' : ''}`} onClick={() => setTab(t.id)}>
+            {t.label}
+            {t.count !== undefined && <span class="chip__count">{num(t.count)}</span>}
+          </button>
+        ))}
+      </nav>
     </div>
   )
 }

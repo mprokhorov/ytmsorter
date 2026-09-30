@@ -71,8 +71,8 @@ export function App() {
       <Header />
       <ExpiredBanner />
       <InterruptedBanner />
+      <Tabs />
       <div class="content">
-        <Tabs />
         <div key={tab.value} class={supportsViewTransitions ? 'panel' : 'panel panel--enter'}>
           {tab.value === 'archive' ? <ArchiveView /> : <PlaylistView role={tab.value} />}
         </div>
