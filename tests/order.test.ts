@@ -11,9 +11,9 @@ describe('целевой порядок', () => {
 
   it('треки по исполнителю, альбому, названию', () => {
     const items = [
-      item('Z', 'track', { artist: 'B', album: 'A' }),
-      item('Y', 'track', { artist: 'A', album: 'B' }),
-      item('X', 'track', { artist: 'A', album: 'A' })
+      item('Z', 'track', { artists: ['B'], album: 'A' }),
+      item('Y', 'track', { artists: ['A'], album: 'B' }),
+      item('X', 'track', { artists: ['A'], album: 'A' })
     ]
     expect(targetOrder('tracks', items).map(i => i.title)).toEqual(['X', 'Y', 'Z'])
   })
@@ -27,8 +27,8 @@ describe('целевой порядок', () => {
 
 describe('перенос между плейлистами', () => {
   it('вставляет на правильную позицию и удаляет из исходного', () => {
-    const tracks = [item('A', 'track', { artist: 'a' }), item('clip', 'music'), item('C', 'track', { artist: 'c' })]
-    const music = [item('alpha'), item('B', 'track', { artist: 'b' }), item('delta')]
+    const tracks = [item('A', 'track', { artists: ['a'] }), item('clip', 'music'), item('C', 'track', { artists: ['c'] })]
+    const music = [item('alpha'), item('B', 'track', { artists: ['b'] }), item('delta')]
     const ops = planTransfers({ tracks, music })
     expect(ops.map(o => [o.item.title, o.to, o.insert, o.position])).toEqual([
       ['clip', 'music', true, 2],
@@ -37,7 +37,7 @@ describe('перенос между плейлистами', () => {
   })
 
   it('если элемент уже есть в целевом плейлисте, только удаляет', () => {
-    const t = item('Song', 'track', { artist: 'x' })
+    const t = item('Song', 'track', { artists: ['x'] })
     const copy = { ...t, id: 'other' }
     const ops = planTransfers({ tracks: [copy], music: [item('m'), t] })
     expect(ops).toHaveLength(1)

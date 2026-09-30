@@ -1,24 +1,30 @@
 import { comparePy, notUpperFlag, pyLower } from './pystr'
 
-export type SortKey = readonly string[]
+export type SortKey = readonly (string | SortKey)[]
 
-export function musicKey(name: string): SortKey {
+function nameKey(name: string): SortKey {
   return [pyLower(name), notUpperFlag(name)]
 }
 
-export function trackKey(artist: string, album: string, name: string): SortKey {
-  return [
-    pyLower(artist), notUpperFlag(artist),
-    pyLower(album), notUpperFlag(album),
-    pyLower(name), notUpperFlag(name)
-  ]
+export function musicKey(name: string): SortKey {
+  return nameKey(name)
+}
+
+export function artistsKey(artists: readonly string[]): SortKey {
+  return artists.map(nameKey).sort(compareKeys)
+}
+
+export function trackKey(artists: readonly string[], album: string, name: string): SortKey {
+  return [artistsKey(artists), ...nameKey(album), ...nameKey(name)]
 }
 
 export function compareKeys(a: SortKey, b: SortKey): number {
   const n = Math.min(a.length, b.length)
   for (let i = 0; i < n; i++) {
-    const c = comparePy(a[i]!, b[i]!)
+    const x = a[i]!
+    const y = b[i]!
+    const c = typeof x === 'string' && typeof y === 'string' ? comparePy(x, y) : compareKeys(x as SortKey, y as SortKey)
     if (c !== 0) return c
   }
-  return a.length - b.length
+  return a.length === b.length ? 0 : a.length < b.length ? -1 : 1
 }

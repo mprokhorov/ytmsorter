@@ -1,10 +1,11 @@
 import { memo } from 'preact/compat'
 import { stripTopic } from '../domain/classify'
-import { coverSources } from '../domain/thumbs'
 import type { Item, Role } from '../domain/types'
 import { Cover } from './Cover'
 import { Icon } from './icons'
-import { dialog, musicUrl, ROLE_LABEL_IN } from './ui'
+import { Marquee } from './Marquee'
+import { openRowMenu } from './RowMenu'
+import { musicUrl, ROLE_LABEL_IN } from './ui'
 
 interface Props {
   item: Item
@@ -14,15 +15,9 @@ interface Props {
 }
 
 export function subtitle(item: Item): string {
-  if (item.kind === 'track') return [item.artist, item.album].filter(Boolean).join(' • ')
-  return item.artist || stripTopic(item.channel)
-}
-
-function toArchive(item: Item, role: Role) {
-  dialog.value = {
-    type: 'archive-form',
-    prefill: { title: item.title, artist: item.artist, album: item.album, kind: item.kind, videoId: item.videoId, role, channel: item.channel, thumb: coverSources(item.thumbnails, 320)[0]?.url }
-  }
+  const artists = item.artists.join(', ')
+  if (item.kind === 'track') return [artists, item.album].filter(Boolean).join(' • ')
+  return artists || stripTopic(item.channel)
 }
 
 export const ItemRow = memo(function ItemRow({ item, index, role, misplaced }: Props) {
@@ -35,9 +30,7 @@ export const ItemRow = memo(function ItemRow({ item, index, role, misplaced }: P
         <a class="row__title" href={musicUrl(item.videoId)} target="_blank" rel="noreferrer" title={item.title}>
           {item.title}
         </a>
-        <div class="row__sub" title={subtitle(item)}>
-          {subtitle(item)}
-        </div>
+        <Marquee class="row__sub" text={subtitle(item)} />
       </div>
       <div class="row__badges">
         {misplaced && (
@@ -48,8 +41,8 @@ export const ItemRow = memo(function ItemRow({ item, index, role, misplaced }: P
         )}
         {!item.available && <span class="badge badge--muted">Недоступно</span>}
       </div>
-      <button class="icon-btn row__action" title="Добавить в архив" aria-label="Добавить в архив" onClick={() => toArchive(item, role)}>
-        <Icon name="archive" size={20} />
+      <button class="icon-btn row__action" title="Ещё" aria-label="Ещё" aria-haspopup="menu" onClick={e => openRowMenu(item, role, e.currentTarget)}>
+        <Icon name="more" size={20} />
       </button>
     </div>
   )

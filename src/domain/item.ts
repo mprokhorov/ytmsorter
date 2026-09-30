@@ -1,5 +1,5 @@
-import { classify, stripTopic } from './classify'
-import { parseTrackDescription } from './parse'
+import { classify } from './classify'
+import { channelArtists, parseTrackDescription } from './parse'
 import type { Item, Thumbnails } from './types'
 
 export interface PlaylistItemResource {
@@ -36,11 +36,11 @@ export function toItem(r: PlaylistItemResource): Item {
     channel,
     thumbnails: s.thumbnails ?? {}
   }
-  if (isUnavailable(r)) return { ...base, kind: 'music', artist: '', album: '', available: false }
+  if (isUnavailable(r)) return { ...base, kind: 'music', artists: [], album: '', available: false }
   const kind = classify(channel, s.description)
   if (kind === 'track') {
     const meta = parseTrackDescription(s.description ?? '', s.title, channel)
-    return { ...base, kind, artist: meta.artist, album: meta.album, available: true }
+    return { ...base, kind, artists: meta.artists, album: meta.album, available: true }
   }
-  return { ...base, kind, artist: stripTopic(channel), album: '', available: true }
+  return { ...base, kind, artists: channelArtists(channel), album: '', available: true }
 }

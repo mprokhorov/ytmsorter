@@ -3,12 +3,12 @@ import type { Item, Role } from './types'
 
 export interface Sortable {
   title: string
-  artist: string
+  artists: readonly string[]
   album: string
 }
 
 export function keyFor(role: Role, x: Sortable): SortKey {
-  return role === 'tracks' ? trackKey(x.artist, x.album, x.title) : musicKey(x.title)
+  return role === 'tracks' ? trackKey(x.artists, x.album, x.title) : musicKey(x.title)
 }
 
 export function targetOrder(role: Role, items: readonly Item[]): Item[] {

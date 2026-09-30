@@ -9,6 +9,7 @@ import { Header, Tabs } from './ui/Header'
 import { InterruptedBanner, JobDialog } from './ui/JobDialog'
 import { PlanDialog } from './ui/PlanDialog'
 import { PlaylistView } from './ui/PlaylistView'
+import { RowMenu } from './ui/RowMenu'
 import { ExpiredBanner, StorageBanner, Unconfigured, Welcome } from './ui/Screens'
 import { SettingsDialog } from './ui/SettingsDialog'
 import { TransferDialog } from './ui/TransferDialog'
@@ -80,6 +81,7 @@ export function App() {
       </div>
       <Dialogs />
       <JobDialog />
+      <RowMenu />
       <Toast />
     </div>
   )

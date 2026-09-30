@@ -16,7 +16,7 @@ export interface Item {
   position: number
   title: string
   kind: Kind
-  artist: string
+  artists: string[]
   album: string
   channel: string
   thumbnails: Thumbnails

@@ -6,6 +6,7 @@ import { load, saveCritical } from './storage'
 export interface Meta {
   title: string
   artist: string
+  artists?: string[]
   album: string
   kind: Kind
   thumb?: string
@@ -58,7 +59,7 @@ export function rememberAndArchive(role: Role, items: readonly Item[]): Item[] {
   const result = items.map(item => {
     if (item.available) {
       const prev = seen[item.videoId]
-      const next: Seen = { title: item.title, artist: item.artist, album: item.album, kind: item.kind, thumb: thumbOf(item), channel: item.channel, seenAt: now, role }
+      const next: Seen = { title: item.title, artist: item.artists.join(', '), artists: item.artists, album: item.album, kind: item.kind, thumb: thumbOf(item), channel: item.channel, seenAt: now, role }
       if (!prev || prev.title !== next.title || prev.artist !== next.artist || prev.album !== next.album || prev.kind !== next.kind || prev.thumb !== next.thumb || prev.role !== next.role || now - prev.seenAt > 86_400_000) {
         seen[item.videoId] = next
         seenChanged = true
@@ -75,7 +76,7 @@ export function rememberAndArchive(role: Role, items: readonly Item[]): Item[] {
     return {
       ...item,
       title: known.title,
-      artist: known.artist,
+      artists: known.artists ?? (known.artist ? [known.artist] : []),
       album: known.album,
       kind: known.kind,
       thumbnails: known.thumb ? { medium: { url: known.thumb, width: 320, height: 180 } } : item.thumbnails

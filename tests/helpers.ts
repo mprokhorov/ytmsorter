@@ -10,7 +10,7 @@ export function item(title: string, kind: Kind = 'music', extra: Partial<Item> =
     position: 0,
     title,
     kind,
-    artist: '',
+    artists: [],
     album: '',
     channel: '',
     thumbnails: {},

@@ -22,9 +22,10 @@ interface Snapshot {
   loadedAt: number
 }
 
-const CACHE_KEY = 'ytms.cache'
+const CACHE_KEY = 'ytms.cache.v2'
 const PLAYLISTS_KEY = 'ytms.myPlaylists'
 
+save('ytms.cache', null)
 let cache: Record<string, Snapshot> = load(CACHE_KEY, {})
 
 const CACHED_THUMBS = ['medium', 'high', 'maxres'] as const

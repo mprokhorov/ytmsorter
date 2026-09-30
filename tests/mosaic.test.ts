@@ -5,25 +5,25 @@ import { item } from './helpers'
 describe('обложка плейлиста', () => {
   it('треки: первые четыре разных альбома, а не четыре первых трека', () => {
     const items = [
-      item('A1', 'track', { artist: 'ABBA', album: 'Gold' }),
-      item('A2', 'track', { artist: 'ABBA', album: 'Gold' }),
-      item('A3', 'track', { artist: 'ABBA', album: 'gold' }),
-      item('B1', 'track', { artist: 'Adele', album: '21' }),
-      item('B2', 'track', { artist: 'Adele', album: '21' }),
-      item('C1', 'track', { artist: 'Adele', album: '25' }),
-      item('D1', 'track', { artist: 'Björk', album: 'Post' }),
-      item('E1', 'track', { artist: 'Queen', album: 'Jazz' })
+      item('A1', 'track', { artists: ['ABBA'], album: 'Gold' }),
+      item('A2', 'track', { artists: ['ABBA'], album: 'Gold' }),
+      item('A3', 'track', { artists: ['ABBA'], album: 'gold' }),
+      item('B1', 'track', { artists: ['Adele'], album: '21' }),
+      item('B2', 'track', { artists: ['Adele'], album: '21' }),
+      item('C1', 'track', { artists: ['Adele'], album: '25' }),
+      item('D1', 'track', { artists: ['Björk'], album: 'Post' }),
+      item('E1', 'track', { artists: ['Queen'], album: 'Jazz' })
     ]
     expect(mosaicItems('tracks', items).map(i => i.title)).toEqual(['A1', 'B1', 'C1', 'D1'])
   })
 
   it('сборник с разными исполнителями считается одним альбомом', () => {
-    const items = [item('X', 'track', { artist: 'A', album: 'Now 45' }), item('Y', 'track', { artist: 'B', album: 'Now 45' }), item('Z', 'track', { artist: 'C', album: 'Other' })]
+    const items = [item('X', 'track', { artists: ['A'], album: 'Now 45' }), item('Y', 'track', { artists: ['B'], album: 'Now 45' }), item('Z', 'track', { artists: ['C'], album: 'Other' })]
     expect(mosaicItems('tracks', items).map(i => i.title)).toEqual(['X', 'Z'])
   })
 
   it('трек без распознанного альбома не склеивается с другими', () => {
-    const items = [item('X', 'track', { artist: 'A', album: '' }), item('Y', 'track', { artist: 'A', album: '' })]
+    const items = [item('X', 'track', { artists: ['A'], album: '' }), item('Y', 'track', { artists: ['A'], album: '' })]
     expect(mosaicItems('tracks', items)).toHaveLength(2)
   })
 

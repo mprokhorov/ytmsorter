@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals'
 
-export const EVICTABLE_KEYS = ['ytms.cache', 'ytms.myPlaylists']
+export const EVICTABLE_KEYS = ['ytms.cache.v2', 'ytms.myPlaylists']
 
 export const storageProblem = signal<string | null>(null)
 
