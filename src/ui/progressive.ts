@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
+import { scrollRoot } from './observe'
 
 const CHUNK = 120
 export const ROW_HEIGHT = 64
@@ -11,7 +12,7 @@ export function useProgressive(total: number, rowHeight = ROW_HEIGHT) {
   useEffect(() => {
     const el = sentinel.current
     if (!el || limit >= total) return
-    const root = el.closest('.dialog__body')
+    const root = scrollRoot(el)
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return

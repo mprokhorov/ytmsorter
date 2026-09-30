@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/ho
 import { coverSources, squareScale } from '../domain/thumbs'
 import type { Kind, Thumbnails } from '../domain/types'
 import { Icon } from './icons'
+import { scrollRoot } from './observe'
 
 export type Shape = 'square' | 'wide'
 
@@ -34,7 +35,7 @@ function create(root: Element | null): IntersectionObserver {
 }
 
 function observerFor(el: Element): IntersectionObserver {
-  const root = el.closest('.dialog__body')
+  const root = scrollRoot(el)
   if (!root) return (viewport ??= create(null))
   let io = scoped.get(root)
   if (!io) {

@@ -1,5 +1,12 @@
 type Callback<T> = (value: T) => void
 
+export function scrollRoot(el: Element): HTMLElement | null {
+  const body = el.closest<HTMLElement>('.dialog__body')
+  if (!body) return null
+  const overflow = getComputedStyle(body).overflowY
+  return overflow === 'auto' || overflow === 'scroll' ? body : null
+}
+
 const sizeCallbacks = new WeakMap<Element, Callback<void>>()
 const visibilityCallbacks = new WeakMap<Element, Callback<boolean>>()
 let sizeObserver: ResizeObserver | null = null
