@@ -11,7 +11,8 @@ export function musicKey(name: string): SortKey {
 }
 
 export function artistsKey(artists: readonly string[]): SortKey {
-  return artists.map(nameKey).sort(compareKeys)
+  const [first, ...rest] = artists
+  return first === undefined ? [] : [nameKey(first), ...rest.map(nameKey).sort(compareKeys)]
 }
 
 export function trackKey(artists: readonly string[], album: string, name: string): SortKey {

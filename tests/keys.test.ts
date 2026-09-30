@@ -50,29 +50,36 @@ describe('ключи сортировки', () => {
   })
 })
 
-describe('сортировка по всем исполнителям', () => {
+describe('сортировка по исполнителям', () => {
   const t = (artists: string[], album = 'X', name = 'n') => trackKey(artists, album, name)
 
-  it('список исполнителей сортируется внутри трека', () => {
-    expect(compareKeys(t(['Zed', 'Adele']), t(['Adele', 'Zed']))).toBe(0)
+  it('решает первый исполнитель в исходном порядке', () => {
+    expect(compareKeys(t(['Zed', 'Adele']), t(['Adele', 'Zed']))).toBe(1)
+    expect(compareKeys(t(['ABBA', 'Björk', 'A']), t(['A']))).toBe(1)
+    expect(compareKeys(t(['ABBA', 'Björk', 'A']), t(['ABBA']))).toBe(1)
   })
 
-  it('сравнение по первому, затем по следующим исполнителям', () => {
+  it('при равном первом остальные сравниваются отсортированными', () => {
+    expect(compareKeys(t(['A', 'Z', 'B']), t(['A', 'B', 'Z']))).toBe(0)
     expect(compareKeys(t(['Adele', 'Björk']), t(['Adele', 'Zed']))).toBe(-1)
-    expect(compareKeys(t(['Zed', 'Adele']), t(['Björk', 'Adele']))).toBe(1)
+    expect(compareKeys(t(['Adele', 'Zed', 'Björk']), t(['Adele', 'Björk', 'Mia']))).toBe(1)
   })
 
   it('при совпадающем префиксе короткий список раньше, независимо от альбома', () => {
     expect(compareKeys(t(['Adele'], 'ZZZ'), t(['Adele', 'Björk'], 'AAA'))).toBe(-1)
   })
 
-  it('полностью совпавшие списки сравниваются по альбому, затем по названию', () => {
-    expect(compareKeys(t(['B', 'A'], '21'), t(['A', 'B'], '25'))).toBe(-1)
-    expect(compareKeys(t(['A', 'B'], '21', 'a'), t(['B', 'A'], '21', 'b'))).toBe(-1)
+  it('совпавшие исполнители сравниваются по альбому, затем по названию', () => {
+    expect(compareKeys(t(['A', 'C', 'B'], '21'), t(['A', 'B', 'C'], '25'))).toBe(-1)
+    expect(compareKeys(t(['A', 'B'], '21', 'a'), t(['A', 'B'], '21', 'b'))).toBe(-1)
   })
 
-  it('регистр внутри списка: заглавная на конце раньше', () => {
-    expect(artistsKey(['adele', 'ADELE'])).toEqual([['adele', 'False'], ['adele', 'True']])
+  it('первый остаётся первым, регистр учитывается как в Python', () => {
+    expect(artistsKey(['adele', 'ADELE', 'Adele'])).toEqual([['adele', 'True'], ['adele', 'False'], ['adele', 'True']])
+  })
+
+  it('без исполнителей — пустой список, раньше всех', () => {
+    expect(compareKeys(t([]), t(['A']))).toBe(-1)
   })
 })
 

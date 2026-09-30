@@ -33,9 +33,32 @@ function afterRender(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }
 
-export function scrollToTop(target?: Element): void {
-  const el = target ?? document.scrollingElement ?? document.documentElement
-  el.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' })
+function stopMomentum(el: HTMLElement): () => void {
+  const prev = el.style.overflowY
+  el.style.overflowY = 'hidden'
+  void el.offsetHeight
+  return () => {
+    el.style.overflowY = prev
+  }
+}
+
+export function scrollToTop(target?: HTMLElement): void {
+  const behavior = reducedMotion() ? 'auto' : 'smooth'
+  if (!target) {
+    ;(document.scrollingElement ?? document.documentElement).scrollTo({ top: 0, behavior })
+    return
+  }
+  const restore = stopMomentum(target)
+  target.scrollTo({ top: 0, behavior })
+  let done = false
+  const finish = () => {
+    if (done) return
+    done = true
+    target.removeEventListener('scrollend', finish)
+    restore()
+  }
+  target.addEventListener('scrollend', finish)
+  setTimeout(finish, 900)
 }
 
 const INTERACTIVE = 'button, a, input, select, textarea, [role="menu"]'

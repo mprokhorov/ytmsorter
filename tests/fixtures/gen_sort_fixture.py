@@ -26,7 +26,8 @@ POOL = ['Adele', 'adele', 'ADELE', 'Кино', 'КИНО', 'кино', 'Ария
 
 
 def sort_tracks_multi_key(track):
-    artists = tuple(sorted((a.lower(), str(not a[-1].isupper())) for a in track.artists))
+    keys = [(a.lower(), str(not a[-1].isupper())) for a in track.artists]
+    artists = tuple(keys[:1] + sorted(keys[1:]))
     return (artists,
             track.album.lower(), str(not track.album[-1].isupper()),
             track.name.lower(), str(not track.name[-1].isupper()))
