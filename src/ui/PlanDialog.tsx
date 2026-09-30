@@ -2,19 +2,16 @@ import { useMemo } from 'preact/hooks'
 import { COST_WRITE } from '../config'
 import { targetOrder } from '../domain/order'
 import { planMoves } from '../domain/plan'
-import type { Item, Role } from '../domain/types'
+import type { Role } from '../domain/types'
 import { runSort } from '../state/job'
 import { busy, playlists, playlistTitle } from '../state/playlists'
 import { quotaRemaining } from '../state/quota'
 import { isWritable } from '../state/settings'
-import { Cover } from './Cover'
 import { Dialog } from './Dialog'
 import { count, MOVES, num, plural, UNITS } from './format'
 import { Icon } from './icons'
-import { subtitle } from './ItemRow'
+import { PlanList, PlanMap, type PlanRow } from './PlanView'
 import { dialog, ROLE_LABEL } from './ui'
-
-const LIMIT = 400
 
 export function QuotaSummary({ cost, steps, perStep, label }: { cost: number; steps: number; perStep: number; label: string }) {
   const remaining = quotaRemaining.value
@@ -67,10 +64,10 @@ export function PlanDialog({ role }: { role: Role }) {
   const plan = useMemo(() => {
     const target = targetOrder(role, items)
     const moves = planMoves(items.map(i => i.id), target.map(i => i.id))
-    const current = new Map(items.map((i, n) => [i.id, n]))
     const final = new Map(target.map((i, n) => [i.id, n]))
-    const byId = new Map<string, Item>(items.map(i => [i.id, i]))
-    return { moves, current, final, byId }
+    const moved = new Set(moves.map(m => m.id))
+    const rows: PlanRow[] = items.map((item, from) => ({ item, from, to: final.get(item.id)!, moved: moved.has(item.id) }))
+    return { moves, rows }
   }, [items, role])
 
   if (!state) return null
@@ -109,30 +106,9 @@ export function PlanDialog({ role }: { role: Role }) {
       ) : (
         <>
           <QuotaSummary cost={cost} steps={plan.moves.length} perStep={COST_WRITE} label={plural(plan.moves.length, MOVES)} />
-          <p class="muted small">
-            Из {num(items.length)} элементов {num(items.length - plan.moves.length)} уже стоят в правильном относительном порядке и останутся на месте. Остальные будут перемещены по одному, строго последовательно.
-          </p>
           <ApplyGuard ids={[state.id]} />
-          <ol class="moves">
-            {plan.moves.slice(0, LIMIT).map(m => {
-              const item = plan.byId.get(m.id)!
-              return (
-                <li class="move" key={m.id}>
-                  <Cover thumbs={item.thumbnails} shape={role === 'tracks' ? 'square' : 'wide'} size={role === 'tracks' ? 36 : 64} kind={item.kind} />
-                  <div class="move__text">
-                    <div class="move__title">{item.title}</div>
-                    <div class="move__sub">{subtitle(item)}</div>
-                  </div>
-                  <div class="move__pos">
-                    <span>#{plan.current.get(m.id)! + 1}</span>
-                    <Icon name="arrow" size={16} />
-                    <span>#{plan.final.get(m.id)! + 1}</span>
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
-          {plan.moves.length > LIMIT && <p class="muted small center">и ещё {num(plan.moves.length - LIMIT)}</p>}
+          <PlanMap rows={plan.rows} />
+          <PlanList rows={plan.rows} role={role} />
         </>
       )}
     </Dialog>
