@@ -33,13 +33,30 @@ function afterRender(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0))
 }
 
-export function scrollToTop(target: Element | Window = window): void {
-  target.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' })
+export function scrollToTop(target?: Element): void {
+  const el = target ?? document.scrollingElement ?? document.documentElement
+  el.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' })
 }
 
-export function onBlankTap(action: () => void) {
-  return (e: MouseEvent) => {
-    if (!(e.target as Element).closest('button, a, input, select, textarea, [role="menu"]')) action()
+const INTERACTIVE = 'button, a, input, select, textarea, [role="menu"]'
+
+const tapStarts = new WeakMap<EventTarget, { x: number; y: number; t: number }>()
+
+export function tapHandlers(action: () => void, allowInteractive = false) {
+  return {
+    onPointerDown: (e: PointerEvent) => {
+      if (e.isPrimary && e.currentTarget) tapStarts.set(e.currentTarget, { x: e.clientX, y: e.clientY, t: e.timeStamp })
+    },
+    onPointerUp: (e: PointerEvent) => {
+      const s = e.currentTarget ? tapStarts.get(e.currentTarget) : undefined
+      if (e.currentTarget) tapStarts.delete(e.currentTarget)
+      if (!s || e.timeStamp - s.t > 600 || Math.hypot(e.clientX - s.x, e.clientY - s.y) > 10) return
+      if (!allowInteractive && (e.target as Element).closest(INTERACTIVE)) return
+      action()
+    },
+    onPointerCancel: (e: PointerEvent) => {
+      if (e.currentTarget) tapStarts.delete(e.currentTarget)
+    }
   }
 }
 

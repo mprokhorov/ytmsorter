@@ -1042,6 +1042,7 @@ html[data-nav='back']::view-transition-new(root) {
 .plan-columns__head {
   position: sticky;
   top: -4px;
+  box-shadow: 0 -12px 0 var(--bg-raised);
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,7 +1,7 @@
 import type { ComponentChildren } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import { Icon } from './icons'
-import { onBlankTap, scrollToTop } from './ui'
+import { scrollToTop, tapHandlers } from './ui'
 
 interface Props {
   title: ComponentChildren
@@ -33,7 +33,7 @@ export function Dialog({ title, subtitle, onClose, children, footer, wide }: Pro
   return (
     <div class="overlay" onClick={e => e.target === e.currentTarget && onClose?.()}>
       <div class={`dialog ${wide ? 'dialog--wide' : ''}`} role="dialog" aria-modal="true">
-        <header class="dialog__header" onClick={onBlankTap(() => body.current && scrollToTop(body.current))}>
+        <header class="dialog__header" {...tapHandlers(() => body.current && scrollToTop(body.current))}>
           <div>
             <h2 class="dialog__title">{title}</h2>
             {subtitle && <div class="dialog__subtitle">{subtitle}</div>}
