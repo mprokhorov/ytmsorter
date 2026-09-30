@@ -1,4 +1,5 @@
 import { authError, authStatus, requestToken } from '../auth/token'
+import { storageProblem } from '../state/storage'
 import { Icon, Logo } from './icons'
 
 export function Welcome() {
@@ -37,6 +38,19 @@ export function ExpiredBanner() {
       <span>{authError.value ?? 'Сессия Google истекла. Все данные на месте — продлите сессию, и работа продолжится.'}</span>
       <button class="btn btn--small btn--primary" onClick={requestToken}>
         Продлить сессию
+      </button>
+    </div>
+  )
+}
+
+export function StorageBanner() {
+  if (!storageProblem.value) return null
+  return (
+    <div class="banner">
+      <Icon name="warning" size={20} />
+      <span>{storageProblem.value}</span>
+      <button class="icon-btn" title="Скрыть" aria-label="Скрыть" onClick={() => (storageProblem.value = null)}>
+        <Icon name="close" size={20} />
       </button>
     </div>
   )

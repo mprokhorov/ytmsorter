@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals'
 import { coverSources } from '../domain/thumbs'
 import type { Item, Kind, Role } from '../domain/types'
-import { load, save } from './storage'
+import { load, saveCritical } from './storage'
 
 export interface Meta {
   title: string
@@ -35,7 +35,7 @@ export const archive = signal<ArchiveEntry[]>(load(ARCHIVE_KEY, []))
 
 function persistArchive(next: ArchiveEntry[]) {
   archive.value = next
-  save(ARCHIVE_KEY, next)
+  saveCritical(ARCHIVE_KEY, next)
 }
 
 function thumbOf(item: Item): string | undefined {
@@ -59,7 +59,7 @@ export function rememberAndArchive(role: Role, items: readonly Item[]): Item[] {
     if (item.available) {
       const prev = seen[item.videoId]
       const next: Seen = { title: item.title, artist: item.artist, album: item.album, kind: item.kind, thumb: thumbOf(item), channel: item.channel, seenAt: now, role }
-      if (!prev || prev.title !== next.title || prev.artist !== next.artist || prev.album !== next.album || prev.kind !== next.kind || prev.thumb !== next.thumb || now - prev.seenAt > 86_400_000) {
+      if (!prev || prev.title !== next.title || prev.artist !== next.artist || prev.album !== next.album || prev.kind !== next.kind || prev.thumb !== next.thumb || prev.role !== next.role || now - prev.seenAt > 86_400_000) {
         seen[item.videoId] = next
         seenChanged = true
       }
@@ -81,7 +81,14 @@ export function rememberAndArchive(role: Role, items: readonly Item[]): Item[] {
       thumbnails: known.thumb ? { medium: { url: known.thumb, width: 320, height: 180 } } : item.thumbnails
     }
   })
-  if (seenChanged) save(SEEN_KEY, seen)
+  const present = new Set(items.map(i => i.videoId))
+  for (const [videoId, meta] of Object.entries(seen)) {
+    if (meta.role === role && !present.has(videoId)) {
+      delete seen[videoId]
+      seenChanged = true
+    }
+  }
+  if (seenChanged) saveCritical(SEEN_KEY, seen)
   if (additions.length > 0) persistArchive([...additions, ...archive.value])
   return result
 }
@@ -115,7 +122,7 @@ export function importArchive(json: string): number {
   persistArchive([...byId.values()].sort((a, b) => b.addedAt - a.addedAt))
   if (data.seen && typeof data.seen === 'object') {
     seen = { ...data.seen, ...seen }
-    save(SEEN_KEY, seen)
+    saveCritical(SEEN_KEY, seen)
   }
   return added
 }

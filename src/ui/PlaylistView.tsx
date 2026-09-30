@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'preact/hooks'
 import { authStatus } from '../auth/token'
+import { mosaicItems } from '../domain/mosaic'
 import { isMisplaced } from '../domain/transfer'
 import type { Role } from '../domain/types'
 import { busy, playlists, playlistTitle, refreshRole, refreshThenOpen } from '../state/playlists'
@@ -8,10 +9,11 @@ import { Cover } from './Cover'
 import { count, ITEMS, num, timeAgo, TRACKS, VIDEOS } from './format'
 import { Icon } from './icons'
 import { ItemRow, subtitle } from './ItemRow'
+import { useProgressive } from './progressive'
 import { dialog, ROLE_LABEL } from './ui'
 
 function Mosaic({ role }: { role: Role }) {
-  const items = playlists.value[role]?.items.filter(i => i.available).slice(0, 4) ?? []
+  const items = mosaicItems(role, playlists.value[role]?.items ?? [])
   if (items.length < 4) {
     return (
       <div class="mosaic mosaic--single">
@@ -48,6 +50,7 @@ export function PlaylistView({ role }: { role: Role }) {
     if (!q) return indexed
     return indexed.filter(({ item }) => item.title.toLowerCase().includes(q) || subtitle(item).toLowerCase().includes(q))
   }, [items, query])
+  const progressive = useProgressive(filtered.length)
 
   if (!selected || !state) {
     return (
@@ -121,9 +124,10 @@ export function PlaylistView({ role }: { role: Role }) {
         </label>
       )}
       <div class={`list list--${role}`}>
-        {filtered.map(({ item, index }) => (
+        {filtered.slice(0, progressive.shown).map(({ item, index }) => (
           <ItemRow key={item.id} item={item} index={index} role={role} misplaced={isMisplaced(role, item)} />
         ))}
+        {progressive.placeholder > 0 && <div ref={progressive.sentinel} style={{ height: progressive.placeholder }} />}
         {state.loadedAt && items.length === 0 && <p class="muted center">Плейлист пуст</p>}
         {query && filtered.length === 0 && items.length > 0 && <p class="muted center">Ничего не найдено</p>}
       </div>

@@ -9,7 +9,7 @@ import { Header, Tabs } from './ui/Header'
 import { InterruptedBanner, JobDialog } from './ui/JobDialog'
 import { PlanDialog } from './ui/PlanDialog'
 import { PlaylistView } from './ui/PlaylistView'
-import { ExpiredBanner, Unconfigured, Welcome } from './ui/Screens'
+import { ExpiredBanner, StorageBanner, Unconfigured, Welcome } from './ui/Screens'
 import { SettingsDialog } from './ui/SettingsDialog'
 import { TransferDialog } from './ui/TransferDialog'
 import { dialog, supportsViewTransitions, tab, toast } from './ui/ui'
@@ -70,6 +70,7 @@ export function App() {
     <div class="app">
       <Header />
       <ExpiredBanner />
+      <StorageBanner />
       <InterruptedBanner />
       <Tabs />
       <div class="content">

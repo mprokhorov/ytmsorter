@@ -1,7 +1,7 @@
 import { computed, signal } from '@preact/signals'
 import { listMyPlaylists, listPlaylistItems, type PlaylistResource } from '../api/youtube'
 import { toItem } from '../domain/item'
-import type { Item, Role } from '../domain/types'
+import type { Item, Role, Thumbnails } from '../domain/types'
 import { rememberAndArchive } from './library'
 import { settings } from './settings'
 import { load, save } from './storage'
@@ -27,9 +27,20 @@ const PLAYLISTS_KEY = 'ytms.myPlaylists'
 
 let cache: Record<string, Snapshot> = load(CACHE_KEY, {})
 
+const CACHED_THUMBS = ['medium', 'high', 'maxres'] as const
+
+function slim(item: Item): Item {
+  const thumbnails: Thumbnails = {}
+  for (const k of CACHED_THUMBS) {
+    const t = item.thumbnails[k]
+    if (t) thumbnails[k] = { url: t.url }
+  }
+  return { ...item, thumbnails }
+}
+
 function remember(id: string, snapshot: Snapshot) {
   const ids = new Set(Object.values(settings.value.playlists))
-  cache = Object.fromEntries(Object.entries({ ...cache, [id]: snapshot }).filter(([k]) => ids.has(k)))
+  cache = Object.fromEntries(Object.entries({ ...cache, [id]: { ...snapshot, items: snapshot.items.map(slim) } }).filter(([k]) => ids.has(k)))
   save(CACHE_KEY, cache)
 }
 
