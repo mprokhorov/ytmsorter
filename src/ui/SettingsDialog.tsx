@@ -62,7 +62,7 @@ function RoleSettings({ role }: { role: Role }) {
 
 export function SettingsDialog() {
   useEffect(() => {
-    if (!myPlaylists.value) loadMyPlaylists()
+    loadMyPlaylists()
   }, [])
   const close = () => (dialog.value = null)
   return (
@@ -109,6 +109,7 @@ export function SettingsDialog() {
         <Icon name="refresh" size={18} />
         Обновить список плейлистов
       </button>
+      <p class="muted small">Версия {__APP_VERSION__}</p>
     </Dialog>
   )
 }

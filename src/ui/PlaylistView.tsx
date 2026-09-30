@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'preact/hooks'
+import { authStatus } from '../auth/token'
 import { isMisplaced } from '../domain/transfer'
 import type { Role } from '../domain/types'
 import { busy, playlists, playlistTitle, refreshRole } from '../state/playlists'
@@ -62,6 +63,7 @@ export function PlaylistView({ role }: { role: Role }) {
   }
 
   const writable = isWritable(state.id)
+  const canPlan = !busy.value && !!state.loadedAt && !state.loading && authStatus.value === 'active'
   const otherSelected = !!settings.value.playlists[role === 'tracks' ? 'music' : 'tracks']
   const unit = role === 'tracks' ? TRACKS : VIDEOS
 
@@ -99,12 +101,12 @@ export function PlaylistView({ role }: { role: Role }) {
             </div>
           )}
           <div class="playlist__actions">
-            <button class="btn btn--primary" disabled={busy.value || !state.loadedAt} onClick={() => (dialog.value = { type: 'plan', role })}>
+            <button class="btn btn--primary" disabled={!canPlan} onClick={() => (dialog.value = { type: 'plan', role })}>
               <Icon name="sort" size={20} />
               Сортировать
             </button>
             {stats.misplaced > 0 && (
-              <button class="btn btn--outline" disabled={busy.value || !otherSelected} onClick={() => (dialog.value = { type: 'transfer' })} title={otherSelected ? undefined : 'Сначала выберите второй плейлист'}>
+              <button class="btn btn--outline" disabled={!canPlan || !otherSelected} onClick={() => (dialog.value = { type: 'transfer' })} title={otherSelected ? undefined : 'Сначала выберите второй плейлист'}>
                 <Icon name="swap" size={20} />
                 Перенести не свои ({num(stats.misplaced)})
               </button>

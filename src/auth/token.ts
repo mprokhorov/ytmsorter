@@ -10,19 +10,27 @@ interface StoredToken {
 }
 
 const TOKEN_KEY = 'ytms.token'
+const SESSION_KEY = 'ytms.session'
 const MARGIN_MS = 60_000
-
-export const authStatus = signal<AuthStatus>(CLIENT_ID ? 'loading' : 'unconfigured')
-export const authError = signal<string | null>(null)
-
-let client: google.accounts.oauth2.TokenClient | null = null
-let token: StoredToken | null = null
-let requesting = false
-let hadSession = false
-const waiters: Array<{ resolve: (t: string) => void; reject: (e: Error) => void }> = []
 
 function valid(t: StoredToken | null): t is StoredToken {
   return !!t && t.expiresAt - MARGIN_MS > Date.now()
+}
+
+const stored = CLIENT_ID ? load<StoredToken | null>(TOKEN_KEY, null) : null
+
+let client: google.accounts.oauth2.TokenClient | null = null
+let token: StoredToken | null = valid(stored) ? stored : null
+let requesting = false
+let hadSession = !!CLIENT_ID && load<boolean>(SESSION_KEY, false)
+const waiters: Array<{ resolve: (t: string) => void; reject: (e: Error) => void }> = []
+
+export const authStatus = signal<AuthStatus>(!CLIENT_ID ? 'unconfigured' : token ? 'active' : hadSession ? 'expired' : 'loading')
+export const authError = signal<string | null>(null)
+
+function remember(next: StoredToken | null) {
+  token = next
+  save(TOKEN_KEY, next)
 }
 
 function loadScript(): Promise<void> {
@@ -57,12 +65,13 @@ function onToken(r: google.accounts.oauth2.TokenResponse) {
     authStatus.value = hadSession ? 'expired' : 'signed-out'
     return
   }
-  token = { value: r.access_token, expiresAt: Date.now() + r.expires_in * 1000 }
+  const next = { value: r.access_token, expiresAt: Date.now() + r.expires_in * 1000 }
+  remember(next)
   hadSession = true
-  save(TOKEN_KEY, token, sessionStorage)
+  save(SESSION_KEY, true)
   authError.value = null
   authStatus.value = 'active'
-  settle(token.value)
+  settle(next.value)
 }
 
 function onError(e: google.accounts.oauth2.ClientConfigError) {
@@ -81,14 +90,15 @@ export async function initAuth(): Promise<void> {
     return
   }
   client = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPE, callback: onToken, error_callback: onError })
-  const stored = load<StoredToken | null>(TOKEN_KEY, null, sessionStorage)
-  if (valid(stored)) {
-    token = stored
-    hadSession = true
-    authStatus.value = 'active'
-  } else {
-    authStatus.value = 'signed-out'
-  }
+  if (authStatus.value === 'loading') authStatus.value = 'signed-out'
+}
+
+export function hasValidToken(): boolean {
+  return valid(token)
+}
+
+export function markExpired(): void {
+  if (authStatus.value === 'active' && !valid(token)) authStatus.value = 'expired'
 }
 
 export function requestToken(): void {
@@ -109,17 +119,16 @@ export function getToken(): Promise<string> {
 
 export function invalidateToken(used: string): void {
   if (token?.value === used) {
-    token = null
-    save(TOKEN_KEY, null, sessionStorage)
+    remember(null)
     if (authStatus.value === 'active') authStatus.value = 'expired'
   }
 }
 
 export function signOut(): void {
-  if (token) google.accounts.oauth2.revoke(token.value)
-  token = null
+  if (token && typeof google !== 'undefined') google.accounts.oauth2.revoke(token.value)
+  remember(null)
   hadSession = false
-  save(TOKEN_KEY, null, sessionStorage)
+  save(SESSION_KEY, null)
   authStatus.value = 'signed-out'
   settle(new Error('Выход из аккаунта'))
 }

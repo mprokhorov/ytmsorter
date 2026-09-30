@@ -1,3 +1,5 @@
+declare const __APP_VERSION__: string
+
 declare namespace google.accounts.oauth2 {
   interface TokenResponse {
     access_token: string
