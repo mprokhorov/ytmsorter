@@ -11,7 +11,17 @@ interface Props {
   wide?: boolean
 }
 
+let locks = 0
+
+function lockPageScroll(): () => void {
+  if (locks++ === 0) document.documentElement.classList.add('scroll-locked')
+  return () => {
+    if (--locks === 0) document.documentElement.classList.remove('scroll-locked')
+  }
+}
+
 export function Dialog({ title, subtitle, onClose, children, footer, wide }: Props) {
+  useEffect(lockPageScroll, [])
   useEffect(() => {
     if (!onClose) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()

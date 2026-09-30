@@ -43,6 +43,16 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
+html.scroll-locked,
+html.scroll-locked body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -786,6 +796,8 @@ html[data-nav='back']::view-transition-new(root) {
   padding: 24px;
   background: rgba(0, 0, 0, 0.7);
   animation: fade 0.15s ease-out;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 @keyframes fade {
@@ -843,6 +855,8 @@ html[data-nav='back']::view-transition-new(root) {
   overflow-y: auto;
   padding: 4px 24px 16px;
   overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .dialog__footer {
