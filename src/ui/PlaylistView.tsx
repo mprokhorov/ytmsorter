@@ -120,7 +120,7 @@ export function PlaylistView({ role }: { role: Role }) {
       {items.length > 0 && (
         <label class="search">
           <Icon name="search" size={20} />
-          <input type="search" placeholder="Поиск по названию, исполнителю, альбому" value={query} onInput={e => setQuery(e.currentTarget.value)} />
+          <input type="search" placeholder="Поиск по плейлисту" value={query} onInput={e => setQuery(e.currentTarget.value)} />
         </label>
       )}
       <div class={`list list--${role}`}>
