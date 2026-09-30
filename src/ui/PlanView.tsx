@@ -3,6 +3,7 @@ import type { Item, Role } from '../domain/types'
 import { Cover } from './Cover'
 import { num } from './format'
 import { subtitle } from './ItemRow'
+import { Marquee } from './Marquee'
 import { useProgressive } from './progressive'
 
 export interface PlanRow {
@@ -20,8 +21,8 @@ function Cell({ row, position, role }: { row: PlanRow; position: number; role: R
       <span class="plan-cell__pos">{num(position + 1)}</span>
       <Cover thumbs={row.item.thumbnails} shape={role === 'tracks' ? 'square' : 'wide'} size={role === 'tracks' ? 32 : 48} kind={row.item.kind} />
       <div class="plan-cell__text">
-        <div class="plan-cell__title">{row.item.title}</div>
-        <div class="plan-cell__sub">{subtitle(row.item)}</div>
+        <Marquee class="plan-cell__title" text={row.item.title} />
+        <Marquee class="plan-cell__sub" text={subtitle(row.item)} />
       </div>
     </div>
   )
