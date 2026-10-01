@@ -116,11 +116,21 @@ export function SettingsDialog() {
         <Icon name="refresh" size={18} />
         Обновить список плейлистов
       </button>
-      <div class="haptics-check">
-        <span class="muted small">Тактильный отклик: {HAPTICS_LABEL[hapticsSupport()]}</span>
-        <button class="btn btn--outline btn--small" onClick={haptic}>
-          Проверить
-        </button>
+      <div class="haptics-check" data-no-haptic>
+        <span class="muted small">Тактильный отклик: {HAPTICS_LABEL[hapticsSupport()]}. Проверьте, какой способ даёт тик:</span>
+        <div class="haptics-check__row">
+          <button class="btn btn--outline btn--small" onClick={haptic}>
+            Способ 1
+          </button>
+          <label class="btn btn--outline btn--small haptics-check__label">
+            Способ 2
+            <input type="checkbox" {...{ switch: true }} class="haptics-check__hidden" aria-hidden="true" tabIndex={-1} />
+          </label>
+          <label class="haptics-check__native">
+            <input type="checkbox" {...{ switch: true }} />
+            Способ 3
+          </label>
+        </div>
       </div>
       <p class="muted small">Версия {__APP_VERSION__}</p>
     </Dialog>

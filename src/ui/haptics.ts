@@ -49,7 +49,7 @@ export function installHaptics(): void {
     'click',
     e => {
       const el = (e.target as Element | null)?.closest?.(TARGETS)
-      if (el && !(el as HTMLButtonElement).disabled) haptic()
+      if (el && !(el as HTMLButtonElement).disabled && !el.closest('[data-no-haptic]')) haptic()
     },
     true
   )
