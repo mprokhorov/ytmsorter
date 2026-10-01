@@ -4,6 +4,7 @@ import { mosaicItems } from '../domain/mosaic'
 import { isMisplaced } from '../domain/transfer'
 import type { Role } from '../domain/types'
 import { busy, playlists, playlistTitle, refreshRole, refreshThenOpen } from '../state/playlists'
+import { regionName } from '../domain/region'
 import { isWritable, settings } from '../state/settings'
 import { Cover } from './Cover'
 import { count, ITEMS, num, timeAgo, TRACKS, VIDEOS } from './format'
@@ -35,14 +36,17 @@ export function PlaylistView({ role }: { role: Role }) {
   const state = playlists.value[role]
   const selected = settings.value.playlists[role]
   const items = state?.items ?? []
+  const region = state?.region && state.region === settings.value.region ? state.region : null
   const stats = useMemo(() => {
     let misplaced = 0
     let unavailable = 0
+    let blocked = 0
     for (const i of items) {
       if (isMisplaced(role, i)) misplaced++
       if (!i.available) unavailable++
+      if (i.regionBlocked) blocked++
     }
-    return { misplaced, unavailable }
+    return { misplaced, unavailable, blocked }
   }, [items, role])
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -81,6 +85,7 @@ export function PlaylistView({ role }: { role: Role }) {
             <span>{count(items.length, role === 'tracks' ? ITEMS : unit)}</span>
             {stats.misplaced > 0 && <span class="meta--warn">{num(stats.misplaced)} не на своём месте</span>}
             {stats.unavailable > 0 && <span>{num(stats.unavailable)} недоступно</span>}
+            {region && stats.blocked > 0 && <span>{num(stats.blocked)} нет в регионе «{regionName(region)}»</span>}
             <span>обновлено {timeAgo(state.loadedAt)}</span>
             {!writable && (
               <span class="meta--lock" title="Запись в плейлист выключена в настройках">
@@ -92,6 +97,12 @@ export function PlaylistView({ role }: { role: Role }) {
             <div class="loading-line">
               <div class="spinner" />
               {state.progress ? `Загрузка ${num(state.progress[0])} из ${num(state.progress[1])}` : 'Загрузка…'}
+            </div>
+          )}
+          {state.regionError && (
+            <div class="alert alert--warn">
+              <Icon name="warning" size={18} />
+              <span>{state.regionError}</span>
             </div>
           )}
           {state.error && (
@@ -125,7 +136,7 @@ export function PlaylistView({ role }: { role: Role }) {
       )}
       <div class={`list list--${role}`}>
         {filtered.slice(0, progressive.shown).map(({ item, index }) => (
-          <ItemRow key={item.id} item={item} index={index} role={role} misplaced={isMisplaced(role, item)} />
+          <ItemRow key={item.id} item={item} index={index} role={role} misplaced={isMisplaced(role, item)} blocked={!!region && !!item.regionBlocked} />
         ))}
         {progressive.placeholder > 0 && <div ref={progressive.sentinel} style={{ height: progressive.placeholder }} />}
         {state.loadedAt && items.length === 0 && <p class="muted center">Плейлист пуст</p>}

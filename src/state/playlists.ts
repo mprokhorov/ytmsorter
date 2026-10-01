@@ -1,5 +1,6 @@
 import { computed, signal } from '@preact/signals'
-import { listMyPlaylists, listPlaylistItems, type PlaylistResource } from '../api/youtube'
+import { listMyPlaylists, listPlaylistItems, listRegionRestrictions, type PlaylistResource } from '../api/youtube'
+import { isBlockedIn } from '../domain/region'
 import { toItem } from '../domain/item'
 import type { Item, Role, Thumbnails } from '../domain/types'
 import { rememberAndArchive } from './library'
@@ -13,6 +14,8 @@ export interface PlaylistState {
   loading: boolean
   progress: [number, number] | null
   error: string | null
+  region: string | null
+  regionError: string | null
 }
 
 export const ROLES: readonly Role[] = ['tracks', 'music']
@@ -20,6 +23,7 @@ export const ROLES: readonly Role[] = ['tracks', 'music']
 interface Snapshot {
   items: Item[]
   loadedAt: number
+  region?: string | null
 }
 
 const CACHE_KEY = 'ytms.cache.v2'
@@ -47,7 +51,7 @@ function remember(id: string, snapshot: Snapshot) {
 
 function initial(id: string): PlaylistState {
   const snap = cache[id]
-  return { id, items: snap?.items ?? [], loadedAt: snap?.loadedAt ?? null, loading: false, progress: null, error: null }
+  return { id, items: snap?.items ?? [], loadedAt: snap?.loadedAt ?? null, loading: false, progress: null, error: null, region: snap?.region ?? null, regionError: null }
 }
 
 export const myPlaylists = signal<PlaylistResource[] | null>(load<PlaylistResource[] | null>(PLAYLISTS_KEY, null))
@@ -96,6 +100,17 @@ function syncSelection() {
   if (!same) playlists.value = next
 }
 
+async function checkRegion(items: Item[]): Promise<{ items: Item[]; region: string | null; regionError: string | null }> {
+  const region = settings.value.region ?? null
+  if (!region) return { items, region: null, regionError: null }
+  try {
+    const restrictions = await listRegionRestrictions(items.filter(i => i.available).map(i => i.videoId))
+    return { items: items.map(i => (i.available && isBlockedIn(restrictions.get(i.videoId), region) ? { ...i, regionBlocked: true } : i)), region, regionError: null }
+  } catch (e) {
+    return { items, region: null, regionError: `Не удалось проверить доступность в регионе: ${(e as Error).message}` }
+  }
+}
+
 export function refreshRole(role: Role): Promise<void> {
   syncSelection()
   const state = playlists.value[role]
@@ -107,10 +122,11 @@ export function refreshRole(role: Role): Promise<void> {
     patch(role, s => ({ ...s, loading: true, error: null, progress: null }))
     try {
       const resources = await listPlaylistItems(id, (loaded, total) => patch(role, s => (s.id === id ? { ...s, progress: [loaded, total] } : s)))
-      const items = rememberAndArchive(role, resources.map(toItem).sort((a, b) => a.position - b.position))
+      const loaded = rememberAndArchive(role, resources.map(toItem).sort((a, b) => a.position - b.position))
+      const { items, region, regionError } = await checkRegion(loaded)
       const loadedAt = Date.now()
-      remember(id, { items, loadedAt })
-      patch(role, s => (s.id === id ? { ...s, items, loadedAt, loading: false, progress: null } : s))
+      remember(id, { items, loadedAt, region })
+      patch(role, s => (s.id === id ? { ...s, items, loadedAt, region, regionError, loading: false, progress: null } : s))
     } catch (e) {
       patch(role, s => (s.id === id ? { ...s, loading: false, progress: null, error: (e as Error).message } : s))
     } finally {

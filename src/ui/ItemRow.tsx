@@ -12,6 +12,7 @@ interface Props {
   index: number
   role: Role
   misplaced: boolean
+  blocked?: boolean
 }
 
 export function subtitle(item: Item): string {
@@ -20,10 +21,10 @@ export function subtitle(item: Item): string {
   return artists || stripTopic(item.channel)
 }
 
-export const ItemRow = memo(function ItemRow({ item, index, role, misplaced }: Props) {
+export const ItemRow = memo(function ItemRow({ item, index, role, misplaced, blocked }: Props) {
   const other = role === 'tracks' ? 'music' : 'tracks'
   return (
-    <div class={`row${misplaced ? ' row--misplaced' : ''}${item.available ? '' : ' row--unavailable'}`}>
+    <div class={`row${misplaced ? ' row--misplaced' : ''}${item.available ? '' : ' row--unavailable'}${blocked ? ' row--blocked' : ''}`} title={blocked ? 'Недоступно в выбранном регионе' : undefined}>
       <span class="row__num">{index + 1}</span>
       <Cover thumbs={item.thumbnails} shape={role === 'tracks' ? 'square' : 'wide'} size={role === 'tracks' ? 48 : 86} kind={item.kind} />
       <div class="row__text">

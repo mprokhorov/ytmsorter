@@ -5,6 +5,7 @@ import { load, save } from './storage'
 export interface Settings {
   playlists: Partial<Record<Role, string>>
   writable: string[]
+  region?: string
 }
 
 const KEY = 'ytms.settings'
@@ -26,4 +27,8 @@ export function setWritable(playlistId: string, on: boolean): void {
 
 export function setPlaylist(role: Role, playlistId: string | undefined): void {
   updateSettings(s => ({ ...s, playlists: { ...s.playlists, [role]: playlistId || undefined } }))
+}
+
+export function setRegion(region: string | undefined): void {
+  updateSettings(s => ({ ...s, region: region || undefined }))
 }

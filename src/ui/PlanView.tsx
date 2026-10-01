@@ -15,9 +15,9 @@ export interface PlanRow {
 
 const ROW = 52
 
-function Cell({ row, position, role }: { row: PlanRow; position: number; role: Role }) {
+function Cell({ row, position, role, region }: { row: PlanRow; position: number; role: Role; region: boolean }) {
   return (
-    <div class={`plan-cell${row.moved ? ' is-moved' : ''}`}>
+    <div class={`plan-cell${row.moved ? ' is-moved' : ''}${region && row.item.regionBlocked ? ' is-blocked' : ''}`}>
       <span class="plan-cell__pos">{num(position + 1)}</span>
       <Cover thumbs={row.item.thumbnails} shape={role === 'tracks' ? 'square' : 'wide'} size={role === 'tracks' ? 32 : 48} kind={row.item.kind} />
       <div class="plan-cell__text">
@@ -28,7 +28,7 @@ function Cell({ row, position, role }: { row: PlanRow; position: number; role: R
   )
 }
 
-export function PlanColumns({ rows, role }: { rows: readonly PlanRow[]; role: Role }) {
+export function PlanColumns({ rows, role, region }: { rows: readonly PlanRow[]; role: Role; region: boolean }) {
   const after = useMemo(() => [...rows].sort((a, b) => a.to - b.to), [rows])
   const moved = useMemo(() => rows.filter(r => r.moved).length, [rows])
   const progressive = useProgressive(rows.length, ROW)
@@ -45,8 +45,8 @@ export function PlanColumns({ rows, role }: { rows: readonly PlanRow[]; role: Ro
       <div class="plan-columns__grid">
         {rows.slice(0, progressive.shown).map((row, i) => (
           <div key={i} class="plan-columns__line">
-            <Cell row={row} position={i} role={role} />
-            <Cell row={after[i]!} position={i} role={role} />
+            <Cell row={row} position={i} role={role} region={region} />
+            <Cell row={after[i]!} position={i} role={role} region={region} />
           </div>
         ))}
         {progressive.placeholder > 0 && <div ref={progressive.sentinel} style={{ height: progressive.placeholder }} />}
