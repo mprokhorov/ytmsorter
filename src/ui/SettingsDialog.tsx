@@ -4,16 +4,9 @@ import type { Role } from '../domain/types'
 import { loadMyPlaylists, myPlaylists, myPlaylistsError, refreshRole, ROLES } from '../state/playlists'
 import { isWritable, setPlaylist, setWritable, settings } from '../state/settings'
 import { Dialog } from './Dialog'
-import { haptic, hapticsSupport, type HapticsSupport } from './haptics'
 import { count, ITEMS } from './format'
 import { Icon } from './icons'
 import { dialog, ROLE_LABEL } from './ui'
-
-const HAPTICS_LABEL: Record<HapticsSupport, string> = {
-  switch: 'поддерживается (iOS 18+, включите «Системную тактильную отдачу» в настройках звуков)',
-  vibrate: 'поддерживается',
-  none: 'не поддерживается этим устройством или версией iOS'
-}
 
 const HINT: Record<Role, string> = {
   tracks: 'Автосгенерированные музыкальные треки с обложкой альбома. Сортировка: первый исполнитель → альбом → название.',
@@ -55,7 +48,7 @@ function RoleSettings({ role }: { role: Role }) {
       )}
       {selected && (
         <label class="toggle">
-          <input type="checkbox" checked={writable} onChange={e => setWritable(selected, e.currentTarget.checked)} />
+          <input type="checkbox" {...{ switch: true }} checked={writable} onChange={e => setWritable(selected, e.currentTarget.checked)} />
           <span class="toggle__track" />
           <span>
             Разрешить запись в этот плейлист
@@ -116,22 +109,6 @@ export function SettingsDialog() {
         <Icon name="refresh" size={18} />
         Обновить список плейлистов
       </button>
-      <div class="haptics-check" data-no-haptic>
-        <span class="muted small">Тактильный отклик: {HAPTICS_LABEL[hapticsSupport()]}. Проверьте, какой способ даёт тик:</span>
-        <div class="haptics-check__row">
-          <button class="btn btn--outline btn--small" onClick={haptic}>
-            Способ 1
-          </button>
-          <label class="btn btn--outline btn--small haptics-check__label">
-            Способ 2
-            <input type="checkbox" {...{ switch: true }} class="haptics-check__hidden" aria-hidden="true" tabIndex={-1} />
-          </label>
-          <label class="haptics-check__native">
-            <input type="checkbox" {...{ switch: true }} />
-            Способ 3
-          </label>
-        </div>
-      </div>
       <p class="muted small">Версия {__APP_VERSION__}</p>
     </Dialog>
   )

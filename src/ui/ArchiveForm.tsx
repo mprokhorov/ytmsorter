@@ -46,7 +46,7 @@ export function ArchiveForm({ entry, prefill }: Props) {
           <button class="btn btn--ghost" onClick={close}>
             Отмена
           </button>
-          <button class="btn btn--primary" type="submit" form="archive-form" disabled={!title.trim() || linkInvalid}>
+          <button class="btn btn--primary" type="button" disabled={!title.trim() || linkInvalid} onClick={submit}>
             Сохранить
           </button>
         </>
