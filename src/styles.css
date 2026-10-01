@@ -1026,7 +1026,7 @@ html[data-nav='back']::view-transition-new(root) {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin: 16px 0 8px;
+  margin: 16px 0 12px;
   color: var(--text-2);
   font-size: 13px;
 }
