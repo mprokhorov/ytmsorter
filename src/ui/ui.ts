@@ -2,6 +2,7 @@ import { signal } from '@preact/signals'
 import type { Role } from '../domain/types'
 import type { ArchiveEntry } from '../state/library'
 import { load, save } from '../state/storage'
+import { haptic } from './haptics'
 
 export type Tab = Role | 'archive'
 
@@ -75,6 +76,7 @@ export function tapHandlers(action: () => void, allowInteractive = false) {
       if (e.currentTarget) tapStarts.delete(e.currentTarget)
       if (!s || e.timeStamp - s.t > 600 || Math.hypot(e.clientX - s.x, e.clientY - s.y) > 10) return
       if (!allowInteractive && (e.target as Element).closest(INTERACTIVE)) return
+      haptic()
       action()
     },
     onPointerCancel: (e: PointerEvent) => {
