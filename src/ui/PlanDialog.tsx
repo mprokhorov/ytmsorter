@@ -10,6 +10,7 @@ import { isWritable } from '../state/settings'
 import { Dialog } from './Dialog'
 import { count, MOVES, num, plural, UNITS } from './format'
 import { Icon } from './icons'
+import { PlanDebug } from './PlanDebug'
 import { PlanColumns, type PlanRow } from './PlanView'
 import { dialog, ROLE_LABEL } from './ui'
 
@@ -107,6 +108,7 @@ export function PlanDialog({ role }: { role: Role }) {
         <>
           <QuotaSummary cost={cost} steps={plan.moves.length} perStep={COST_WRITE} label={plural(plan.moves.length, MOVES)} />
           <ApplyGuard ids={[state.id]} />
+          <PlanDebug role={role} playlistId={state.id} rows={plan.rows} />
           <PlanColumns rows={plan.rows} role={role} />
         </>
       )}
