@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { artistsKey, compareKeys, musicKey, trackKey } from '../src/domain/keys'
+import { compareKeys, musicKey, trackKey } from '../src/domain/keys'
 import fixture from './fixtures/sort.json'
 
 interface Row {
@@ -50,35 +50,21 @@ describe('ключи сортировки', () => {
   })
 })
 
-describe('сортировка по исполнителям', () => {
+describe('несколько исполнителей — как в исходном скрипте', () => {
   const t = (artists: string[], album = 'X', name = 'n') => trackKey(artists, album, name)
 
-  it('решает первый исполнитель в исходном порядке', () => {
+  it('учитывается только первый исполнитель', () => {
     expect(compareKeys(t(['Zed', 'Adele']), t(['Adele', 'Zed']))).toBe(1)
     expect(compareKeys(t(['ABBA', 'Björk', 'A']), t(['A']))).toBe(1)
-    expect(compareKeys(t(['ABBA', 'Björk', 'A']), t(['ABBA']))).toBe(1)
   })
 
-  it('при равном первом остальные сравниваются отсортированными', () => {
-    expect(compareKeys(t(['A', 'Z', 'B']), t(['A', 'B', 'Z']))).toBe(0)
-    expect(compareKeys(t(['Adele', 'Björk']), t(['Adele', 'Zed']))).toBe(-1)
-    expect(compareKeys(t(['Adele', 'Zed', 'Björk']), t(['Adele', 'Björk', 'Mia']))).toBe(1)
+  it('остальные исполнители не влияют: дальше решают альбом и название', () => {
+    expect(compareKeys(t(['Adele', 'Zed'], '21'), t(['Adele'], '25'))).toBe(-1)
+    expect(compareKeys(t(['Adele', 'Zed'], '21', 'n'), t(['Adele', 'Björk'], '21', 'n'))).toBe(0)
   })
 
-  it('при совпадающем префиксе короткий список раньше, независимо от альбома', () => {
-    expect(compareKeys(t(['Adele'], 'ZZZ'), t(['Adele', 'Björk'], 'AAA'))).toBe(-1)
-  })
-
-  it('совпавшие исполнители сравниваются по альбому, затем по названию', () => {
-    expect(compareKeys(t(['A', 'C', 'B'], '21'), t(['A', 'B', 'C'], '25'))).toBe(-1)
-    expect(compareKeys(t(['A', 'B'], '21', 'a'), t(['A', 'B'], '21', 'b'))).toBe(-1)
-  })
-
-  it('первый остаётся первым, регистр учитывается как в Python', () => {
-    expect(artistsKey(['adele', 'ADELE', 'Adele'])).toEqual([['adele', 'True'], ['adele', 'False'], ['adele', 'True']])
-  })
-
-  it('без исполнителей — пустой список, раньше всех', () => {
+  it('без исполнителей — как пустая строка', () => {
+    expect(compareKeys(t([]), t(['']))).toBe(0)
     expect(compareKeys(t([]), t(['A']))).toBe(-1)
   })
 })
@@ -91,7 +77,7 @@ describe('совпадение с эталонной реализацией на
     expect(order).toEqual(fixture.music)
   })
 
-  it('сортировка по всем исполнителям', () => {
+  it('несколько исполнителей: ключ исходного скрипта по первому', () => {
     const multi = fixture.multiItems as Array<{ artists: string[]; album: string; title: string }>
     const key = (i: number) => trackKey(multi[i]!.artists, multi[i]!.album, multi[i]!.title)
     const order = stableSort(multi.map((_, i) => i), (a, b) => compareKeys(key(a), key(b)))
