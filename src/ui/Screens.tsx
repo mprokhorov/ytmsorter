@@ -30,19 +30,6 @@ export function Unconfigured() {
   )
 }
 
-export function ExpiredBanner() {
-  if (authStatus.value !== 'expired') return null
-  return (
-    <div class="banner banner--auth">
-      <Icon name="lock" size={20} />
-      <span>{authError.value ?? 'Сессия Google истекла — она продлится сама при первом касании экрана. Все данные на месте.'}</span>
-      <button class="btn btn--small btn--primary" onClick={requestToken}>
-        Продлить сессию
-      </button>
-    </div>
-  )
-}
-
 export function StorageBanner() {
   if (!storageProblem.value) return null
   return (

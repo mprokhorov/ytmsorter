@@ -849,11 +849,6 @@ html[data-nav='back']::view-transition-new(root) {
   color: #ffe08a;
 }
 
-.banner--auth {
-  background: rgba(62, 166, 255, 0.12);
-  color: #b3dcff;
-}
-
 .overlay {
   position: fixed;
   inset: 0;

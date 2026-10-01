@@ -1,6 +1,6 @@
 import { effect } from '@preact/signals'
 import { useEffect } from 'preact/hooks'
-import { authStatus, initAuth, installAutoRenew } from './auth/token'
+import { authError, authStatus, initAuth, installAutoRenew } from './auth/token'
 import { busy, loadMyPlaylists, loadNeverLoaded, myPlaylists } from './state/playlists'
 import { tickQuota } from './state/quota'
 import { ArchiveForm } from './ui/ArchiveForm'
@@ -10,10 +10,10 @@ import { InterruptedBanner, JobDialog } from './ui/JobDialog'
 import { PlanDialog } from './ui/PlanDialog'
 import { PlaylistView } from './ui/PlaylistView'
 import { RowMenu } from './ui/RowMenu'
-import { ExpiredBanner, StorageBanner, Unconfigured, Welcome } from './ui/Screens'
+import { StorageBanner, Unconfigured, Welcome } from './ui/Screens'
 import { SettingsDialog } from './ui/SettingsDialog'
 import { TransferDialog } from './ui/TransferDialog'
-import { dialog, supportsViewTransitions, tab, toast } from './ui/ui'
+import { dialog, showToast, supportsViewTransitions, tab, toast } from './ui/ui'
 
 let started = false
 
@@ -26,6 +26,11 @@ effect(() => {
 
 effect(() => {
   if (authStatus.value === 'signed-out') started = false
+})
+
+effect(() => {
+  const error = authError.value
+  if (error && authStatus.peek() !== 'signed-out') showToast(error, true)
 })
 
 function Dialogs() {
@@ -71,7 +76,6 @@ export function App() {
   return (
     <div class="app">
       <Header />
-      <ExpiredBanner />
       <StorageBanner />
       <InterruptedBanner />
       <Tabs />
