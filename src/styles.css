@@ -931,6 +931,31 @@ html[data-nav='back']::view-transition-new(root) {
   border-top: 1px solid var(--border);
 }
 
+.alert-overlay {
+  z-index: 90;
+}
+
+.alert {
+  align-items: center;
+  gap: 12px;
+  max-width: 360px;
+  padding: 28px 24px 24px;
+  text-align: center;
+}
+
+.alert p {
+  margin: 0;
+}
+
+.alert__error {
+  color: var(--error);
+}
+
+.alert .btn {
+  align-self: stretch;
+  margin-top: 8px;
+}
+
 .summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1417,6 +1442,16 @@ html[data-nav='back']::view-transition-new(root) {
     max-height: none;
   }
 
+  html.sheet-open .overlay.alert-overlay {
+    position: fixed;
+    inset: 0;
+    min-height: 0;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    touch-action: none;
+  }
+
   html.sheet-open .dialog__body {
     flex: none;
     overflow: visible;
@@ -1525,6 +1560,18 @@ html[data-nav='back']::view-transition-new(root) {
     border-radius: 16px 16px 0 0;
     border-bottom: 0;
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .overlay.alert-overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .dialog.alert {
+    max-width: 360px;
+    border-radius: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
   }
 
   .dialog__header {

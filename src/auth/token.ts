@@ -31,6 +31,7 @@ export const authError = signal<string | null>(null)
 function remember(next: StoredToken | null) {
   token = next
   save(TOKEN_KEY, next)
+  watchExpiry()
 }
 
 function loadScript(): Promise<void> {
@@ -53,7 +54,6 @@ function settle(value: string | Error) {
   }
 }
 
-const RENEW_AHEAD_MS = 10 * 60_000
 
 function fallbackStatus(): AuthStatus {
   return valid(token) ? 'active' : hadSession ? 'expired' : 'signed-out'
@@ -111,8 +111,8 @@ export function markExpired(): void {
   if (authStatus.value === 'active' && !valid(token)) authStatus.value = 'expired'
 }
 
-export function requestToken(): void {
-  if (!client || requesting) return
+export function requestToken(force = false): void {
+  if (!client || (requesting && !force)) return
   requesting = true
   authError.value = null
   client.requestAccessToken({ prompt: '' })
@@ -143,21 +143,16 @@ export function signOut(): void {
   settle(new Error('Выход из аккаунта'))
 }
 
-function shouldRenew(): boolean {
-  if (!client || requesting) return false
-  if (authStatus.value === 'expired') return true
-  return authStatus.value === 'active' && !!token && token.expiresAt - Date.now() < RENEW_AHEAD_MS
+let expiryTimer: ReturnType<typeof setTimeout> | undefined
+
+function watchExpiry() {
+  clearTimeout(expiryTimer)
+  if (!token) return
+  expiryTimer = setTimeout(markExpired, Math.max(0, token.expiresAt - MARGIN_MS - Date.now()) + 1000)
 }
 
-const CONTROLS = 'button, [role="button"], [role="tab"], select, summary, input[type="checkbox"], input[type="radio"]'
-
-export function installAutoRenew(): void {
-  document.addEventListener(
-    'click',
-    e => {
-      if (!(e.target instanceof Element) || !e.target.closest(CONTROLS)) return
-      if (shouldRenew()) requestToken()
-    },
-    true
-  )
+export function installExpiryWatch(): void {
+  watchExpiry()
+  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && markExpired())
+  window.addEventListener('focus', markExpired)
 }
