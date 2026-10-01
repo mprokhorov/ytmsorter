@@ -18,18 +18,28 @@ function artistsFromLine(line: string, title: string): string[] {
     .filter(Boolean)
 }
 
+function nfc(s: string): string {
+  return s.normalize('NFC')
+}
+
+function ownerFirst(artists: string[], channel: string): string[] {
+  const owner = nfc(stripTopic(channel)).trim().toLowerCase()
+  const index = artists.findIndex(a => a.toLowerCase() === owner)
+  return index > 0 ? [artists[index]!, ...artists.slice(0, index), ...artists.slice(index + 1)] : artists
+}
+
 export function channelArtists(channel: string): string[] {
-  const name = stripTopic(channel).trim()
+  const name = nfc(stripTopic(channel)).trim()
   return name ? [name] : []
 }
 
 export function parseTrackDescription(description: string, title: string, channel: string): TrackMeta {
-  const lines = description.split(/\r?\n/).map(l => l.trim())
+  const lines = nfc(description).split(/\r?\n/).map(l => l.trim())
   const index = lines.findIndex(l => l.includes(SEPARATOR) && !NOT_ALBUM.test(l))
   let artists: string[] = []
   let album = ''
   if (index >= 0) {
-    artists = artistsFromLine(lines[index]!, title)
+    artists = ownerFirst(artistsFromLine(lines[index]!, nfc(title)), channel)
     const next = lines.slice(index + 1).find(l => l.length > 0)
     if (next && !NOT_ALBUM.test(next)) album = next
   }

@@ -32,8 +32,8 @@ export function toItem(r: PlaylistItemResource): Item {
     id: r.id,
     videoId,
     position: s.position,
-    title: s.title,
-    channel,
+    title: s.title.normalize('NFC'),
+    channel: channel.normalize('NFC'),
     thumbnails: s.thumbnails ?? {}
   }
   if (isUnavailable(r)) return { ...base, kind: 'music', artists: [], album: '', available: false }
