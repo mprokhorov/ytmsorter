@@ -1,6 +1,6 @@
 import { effect } from '@preact/signals'
 import { useEffect } from 'preact/hooks'
-import { authStatus, initAuth } from './auth/token'
+import { authStatus, initAuth, installAutoRenew } from './auth/token'
 import { busy, loadMyPlaylists, loadNeverLoaded, myPlaylists } from './state/playlists'
 import { tickQuota } from './state/quota'
 import { ArchiveForm } from './ui/ArchiveForm'
@@ -52,6 +52,7 @@ function Toast() {
 export function App() {
   useEffect(() => {
     initAuth()
+    installAutoRenew()
     const onUnload = (e: BeforeUnloadEvent) => {
       if (busy.value) e.preventDefault()
     }

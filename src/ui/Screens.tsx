@@ -35,7 +35,7 @@ export function ExpiredBanner() {
   return (
     <div class="banner banner--auth">
       <Icon name="lock" size={20} />
-      <span>{authError.value ?? 'Сессия Google истекла. Все данные на месте — продлите сессию, и работа продолжится.'}</span>
+      <span>{authError.value ?? 'Сессия Google истекла — она продлится сама при первом касании экрана. Все данные на месте.'}</span>
       <button class="btn btn--small btn--primary" onClick={requestToken}>
         Продлить сессию
       </button>

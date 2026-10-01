@@ -22,6 +22,7 @@ const stored = CLIENT_ID ? load<StoredToken | null>(TOKEN_KEY, null) : null
 let client: google.accounts.oauth2.TokenClient | null = null
 let token: StoredToken | null = valid(stored) ? stored : null
 let requesting = false
+let retryAfter = 0
 let hadSession = !!CLIENT_ID && load<boolean>(SESSION_KEY, false)
 const waiters: Array<{ resolve: (t: string) => void; reject: (e: Error) => void }> = []
 
@@ -53,16 +54,28 @@ function settle(value: string | Error) {
   }
 }
 
+const RENEW_AHEAD_MS = 10 * 60_000
+const RETRY_PAUSE_MS = 60_000
+
+function fallbackStatus(): AuthStatus {
+  return valid(token) ? 'active' : hadSession ? 'expired' : 'signed-out'
+}
+
+function failed() {
+  retryAfter = Date.now() + RETRY_PAUSE_MS
+  authStatus.value = fallbackStatus()
+}
+
 function onToken(r: google.accounts.oauth2.TokenResponse) {
   requesting = false
   if (r.error || !r.access_token) {
     authError.value = r.error_description ?? r.error ?? 'Авторизация не удалась'
-    authStatus.value = hadSession ? 'expired' : 'signed-out'
+    failed()
     return
   }
   if (!google.accounts.oauth2.hasGrantedAllScopes(r, SCOPE)) {
     authError.value = 'Нужно разрешить доступ к YouTube'
-    authStatus.value = hadSession ? 'expired' : 'signed-out'
+    failed()
     return
   }
   const next = { value: r.access_token, expiresAt: Date.now() + r.expires_in * 1000 }
@@ -76,8 +89,8 @@ function onToken(r: google.accounts.oauth2.TokenResponse) {
 
 function onError(e: google.accounts.oauth2.ClientConfigError) {
   requesting = false
-  if (e.type !== 'popup_closed') authError.value = e.type === 'popup_failed_to_open' ? 'Браузер заблокировал окно входа — нажмите кнопку ещё раз' : e.message ?? 'Ошибка входа'
-  authStatus.value = hadSession ? 'expired' : 'signed-out'
+  if (e.type !== 'popup_closed') authError.value = e.type === 'popup_failed_to_open' ? 'Браузер заблокировал окно входа — нажмите «Продлить сессию»' : e.message ?? 'Ошибка входа'
+  failed()
 }
 
 export async function initAuth(): Promise<void> {
@@ -131,4 +144,16 @@ export function signOut(): void {
   save(SESSION_KEY, null)
   authStatus.value = 'signed-out'
   settle(new Error('Выход из аккаунта'))
+}
+
+function shouldRenew(): boolean {
+  if (!client || requesting || Date.now() < retryAfter) return false
+  if (authStatus.value === 'expired') return true
+  return authStatus.value === 'active' && !!token && token.expiresAt - Date.now() < RENEW_AHEAD_MS
+}
+
+export function installAutoRenew(): void {
+  const onGesture = () => shouldRenew() && requestToken()
+  document.addEventListener('touchend', onGesture, { capture: true, passive: true })
+  document.addEventListener('click', onGesture, true)
 }
