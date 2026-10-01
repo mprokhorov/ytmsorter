@@ -1,9 +1,9 @@
 import { render } from 'preact'
-import { registerSW } from 'virtual:pwa-register'
 import { App } from './app'
 import { installHaptics } from './ui/haptics'
 import './styles.css'
+import { installUpdates } from './update'
 
-registerSW({ immediate: true })
+installUpdates()
 installHaptics()
 render(<App />, document.getElementById('app')!)
