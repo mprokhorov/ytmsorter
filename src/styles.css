@@ -1343,20 +1343,6 @@ html[data-nav='back']::view-transition-new(root) {
   pointer-events: none;
 }
 
-.plan-debug {
-  margin-top: 12px;
-}
-
-.plan-debug__text {
-  width: 100%;
-  margin-top: 8px;
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  font-family: ui-monospace, monospace;
-}
-
 .toast {
   position: fixed;
   left: 50%;
