@@ -931,11 +931,11 @@ html[data-nav='back']::view-transition-new(root) {
   border-top: 1px solid var(--border);
 }
 
-.alert-overlay {
+.session-overlay {
   z-index: 90;
 }
 
-.alert {
+.session-popup {
   align-items: center;
   gap: 12px;
   max-width: 360px;
@@ -943,15 +943,15 @@ html[data-nav='back']::view-transition-new(root) {
   text-align: center;
 }
 
-.alert p {
+.session-popup p {
   margin: 0;
 }
 
-.alert__error {
+.session-popup__error {
   color: var(--error);
 }
 
-.alert .btn {
+.session-popup .btn {
   align-self: stretch;
   margin-top: 8px;
 }
@@ -1442,7 +1442,7 @@ html[data-nav='back']::view-transition-new(root) {
     max-height: none;
   }
 
-  html.sheet-open .overlay.alert-overlay {
+  html.sheet-open .overlay.session-overlay {
     position: fixed;
     inset: 0;
     min-height: 0;
@@ -1562,12 +1562,12 @@ html[data-nav='back']::view-transition-new(root) {
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .overlay.alert-overlay {
+  .overlay.session-overlay {
     align-items: center;
     padding: 24px;
   }
 
-  .dialog.alert {
+  .dialog.session-popup {
     max-width: 360px;
     border-radius: 16px;
     border-bottom: 1px solid var(--border);

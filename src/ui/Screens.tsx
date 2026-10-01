@@ -33,14 +33,14 @@ export function Unconfigured() {
 export function SessionExpired() {
   if (authStatus.value !== 'expired') return null
   return (
-    <div class="overlay alert-overlay">
-      <div class="dialog alert" role="alertdialog" aria-modal="true" aria-labelledby="session-title">
+    <div class="overlay session-overlay">
+      <div class="dialog session-popup" role="alertdialog" aria-modal="true" aria-labelledby="session-title">
         <Icon name="lock" size={32} />
         <h2 id="session-title" class="dialog__title">
           Сессия истекла
         </h2>
         <p class="muted">Google даёт доступ на час. Продлите сессию, чтобы продолжить. Все данные на месте.</p>
-        {authError.value && <p class="alert__error">{authError.value}</p>}
+        {authError.value && <p class="session-popup__error">{authError.value}</p>}
         <button class="btn btn--primary btn--large" onClick={() => requestToken(true)}>
           Продлить сессию
         </button>
