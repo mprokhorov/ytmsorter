@@ -4,9 +4,16 @@ import type { Role } from '../domain/types'
 import { loadMyPlaylists, myPlaylists, myPlaylistsError, refreshRole, ROLES } from '../state/playlists'
 import { isWritable, setPlaylist, setWritable, settings } from '../state/settings'
 import { Dialog } from './Dialog'
+import { haptic, hapticsSupport, type HapticsSupport } from './haptics'
 import { count, ITEMS } from './format'
 import { Icon } from './icons'
 import { dialog, ROLE_LABEL } from './ui'
+
+const HAPTICS_LABEL: Record<HapticsSupport, string> = {
+  switch: 'поддерживается (iOS 18+, включите «Системную тактильную отдачу» в настройках звуков)',
+  vibrate: 'поддерживается',
+  none: 'не поддерживается этим устройством или версией iOS'
+}
 
 const HINT: Record<Role, string> = {
   tracks: 'Автосгенерированные музыкальные треки с обложкой альбома. Сортировка: первый исполнитель → альбом → название.',
@@ -109,6 +116,12 @@ export function SettingsDialog() {
         <Icon name="refresh" size={18} />
         Обновить список плейлистов
       </button>
+      <div class="haptics-check">
+        <span class="muted small">Тактильный отклик: {HAPTICS_LABEL[hapticsSupport()]}</span>
+        <button class="btn btn--outline btn--small" onClick={haptic}>
+          Проверить
+        </button>
+      </div>
       <p class="muted small">Версия {__APP_VERSION__}</p>
     </Dialog>
   )
