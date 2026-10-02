@@ -1,9 +1,8 @@
-import { useEffect, useMemo } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 import { signOut } from '../auth/token'
 import type { Role } from '../domain/types'
 import { loadMyPlaylists, myPlaylists, myPlaylistsError, refreshRole, ROLES } from '../state/playlists'
-import { regionOptions } from '../domain/region'
-import { isWritable, setPlaylist, setRegion, setWritable, settings } from '../state/settings'
+import { isWritable, setPlaylist, setWritable, settings } from '../state/settings'
 import { Dialog } from './Dialog'
 import { count, ITEMS } from './format'
 import { Icon } from './icons'
@@ -61,31 +60,6 @@ function RoleSettings({ role }: { role: Role }) {
   )
 }
 
-function RegionSettings() {
-  const options = useMemo(regionOptions, [])
-  return (
-    <fieldset class="field">
-      <legend class="field__label">Регион</legend>
-      <p class="field__hint">Треки, которые YouTube не показывает в этой стране, станут в списке серыми. Проверка расходует ещё 1 единицу квоты на 50 видео при каждом обновлении.</p>
-      <select
-        class="select"
-        value={settings.value.region ?? ''}
-        onChange={e => {
-          setRegion(e.currentTarget.value || undefined)
-          for (const role of ROLES) refreshRole(role)
-        }}
-      >
-        <option value="">— не проверять —</option>
-        {options.map(o => (
-          <option key={o.code} value={o.code}>
-            {o.name}
-          </option>
-        ))}
-      </select>
-    </fieldset>
-  )
-}
-
 export function SettingsDialog() {
   useEffect(() => {
     loadMyPlaylists()
@@ -125,7 +99,6 @@ export function SettingsDialog() {
       {ROLES.map(role => (
         <RoleSettings key={role} role={role} />
       ))}
-      <RegionSettings />
       <div class="note">
         <Icon name="warning" size={18} />
         <span>

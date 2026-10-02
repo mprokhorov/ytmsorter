@@ -1,6 +1,5 @@
 import { COST_LIST, COST_WRITE } from '../config'
 import type { PlaylistItemResource } from '../domain/item'
-import type { RegionRestriction } from '../domain/region'
 import type { Thumbnails } from '../domain/types'
 import { isWritable } from '../state/settings'
 import { ApiError, request } from './client'
@@ -36,21 +35,6 @@ export function listMyPlaylists(): Promise<PlaylistResource[]> {
 
 export function listPlaylistItems(playlistId: string, onPage?: (loaded: number, total: number) => void): Promise<PlaylistItemResource[]> {
   return listAll<PlaylistItemResource>('/playlistItems', { part: 'snippet,contentDetails', playlistId }, onPage)
-}
-
-interface VideoResource {
-  id: string
-  contentDetails?: { regionRestriction?: RegionRestriction }
-}
-
-export async function listRegionRestrictions(videoIds: readonly string[]): Promise<Map<string, RegionRestriction>> {
-  const result = new Map<string, RegionRestriction>()
-  const unique = [...new Set(videoIds)]
-  for (let i = 0; i < unique.length; i += 50) {
-    const page = await request<Page<VideoResource>>('/videos', { params: { part: 'contentDetails', id: unique.slice(i, i + 50).join(','), maxResults: 50 }, cost: COST_LIST })
-    for (const v of page.items) if (v.contentDetails?.regionRestriction) result.set(v.id, v.contentDetails.regionRestriction)
-  }
-  return result
 }
 
 function guard(playlistId: string) {

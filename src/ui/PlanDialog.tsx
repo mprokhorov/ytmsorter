@@ -6,7 +6,7 @@ import type { Role } from '../domain/types'
 import { runSort } from '../state/job'
 import { busy, playlists, playlistTitle } from '../state/playlists'
 import { quotaRemaining } from '../state/quota'
-import { isWritable, settings } from '../state/settings'
+import { isWritable } from '../state/settings'
 import { Dialog } from './Dialog'
 import { count, MOVES, num, plural, UNITS } from './format'
 import { Icon } from './icons'
@@ -107,7 +107,7 @@ export function PlanDialog({ role }: { role: Role }) {
         <>
           <QuotaSummary cost={cost} steps={plan.moves.length} perStep={COST_WRITE} label={plural(plan.moves.length, MOVES)} />
           <ApplyGuard ids={[state.id]} />
-          <PlanColumns rows={plan.rows} role={role} region={!!state.region && state.region === settings.value.region} />
+          <PlanColumns rows={plan.rows} role={role} />
         </>
       )}
     </Dialog>

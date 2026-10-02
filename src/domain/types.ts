@@ -21,7 +21,6 @@ export interface Item {
   channel: string
   thumbnails: Thumbnails
   available: boolean
-  regionBlocked?: boolean
 }
 
 export function roleKind(role: Role): Kind {

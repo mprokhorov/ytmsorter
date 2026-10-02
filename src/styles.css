@@ -695,12 +695,6 @@ html[data-nav='back']::view-transition-new(root) {
   opacity: 0.45;
 }
 
-.row--blocked .cover,
-.row--blocked .row__text {
-  opacity: 0.4;
-  filter: grayscale(1);
-}
-
 .row--unavailable .row__title {
   text-decoration: line-through;
   text-decoration-color: rgba(255, 255, 255, 0.35);
@@ -1110,12 +1104,6 @@ html[data-nav='back']::view-transition-new(root) {
 .plan-cell.is-moved {
   border-left-color: var(--plan-moved);
   background: rgba(70, 150, 230, 0.14);
-}
-
-.plan-cell.is-blocked .cover,
-.plan-cell.is-blocked .plan-cell__text {
-  opacity: 0.4;
-  filter: grayscale(1);
 }
 
 .plan-cell__pos {
