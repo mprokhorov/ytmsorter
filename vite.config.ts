@@ -14,7 +14,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'YTM Sorter',
-        short_name: 'Sorter',
+        short_name: 'YTM Sorter',
         description: 'Просмотр и сортировка плейлистов YouTube Music',
         lang: 'ru',
         theme_color: '#030303',

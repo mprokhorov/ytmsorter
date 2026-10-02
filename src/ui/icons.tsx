@@ -42,10 +42,10 @@ export function Logo({ size = 32 }: { size?: number }) {
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="16" fill="url(#logo-g)" />
-      <rect x="14" y="16" width="22" height="6" rx="3" fill="#fff" />
-      <rect x="14" y="29" width="16" height="6" rx="3" fill="#fff" opacity=".85" />
-      <rect x="14" y="42" width="10" height="6" rx="3" fill="#fff" opacity=".7" />
-      <path d="M44 14v22.2a6 6 0 1 0 4 5.66V22h6v-8H44z" fill="#fff" />
+      <rect x="8" y="15" width="26" height="8" rx="4" fill="#fff" />
+      <rect x="8" y="28" width="20" height="8" rx="4" fill="#fff" opacity=".85" />
+      <rect x="8" y="41" width="13" height="8" rx="4" fill="#fff" opacity=".7" />
+      <path d="M43 12h14v10h-8v23a9.5 8.5 0 1 1-6-7.9V12z" fill="#fff" />
     </svg>
   )
 }
