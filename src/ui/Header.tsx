@@ -4,7 +4,7 @@ import { busy, loading, playlists, refreshAll, ROLES } from '../state/playlists'
 import { msUntilPacificMidnight, quota } from '../state/quota'
 import { duration, num, sentences } from './format'
 import { Icon, Logo } from './icons'
-import { dialog, ROLE_LABEL, scrollToTop, setTab, tab, tapHandlers, type Tab } from './ui'
+import { dialog, ROLE_LABEL, scrollToTop, selectedTab, setTab, tapHandlers, type Tab } from './ui'
 
 function QuotaBadge() {
   const q = quota.value
@@ -54,7 +54,7 @@ export function Tabs() {
     <div class="tabs-bar">
       <nav class="chips" role="tablist">
         {tabs.map(t => (
-          <button key={t.id} role="tab" aria-selected={tab.value === t.id} class={`chip${tab.value === t.id ? ' is-active' : ''}`} onClick={() => setTab(t.id)} {...(tab.value === t.id ? tapHandlers(() => scrollToTop(), true) : {})}>
+          <button key={t.id} role="tab" aria-selected={selectedTab.value === t.id} class={`chip${selectedTab.value === t.id ? ' is-active' : ''}`} onClick={() => setTab(t.id)} {...(selectedTab.value === t.id ? tapHandlers(() => scrollToTop(), true) : {})}>
             {t.label}
             {t.count !== undefined && <span class="chip__count">{num(t.count)}</span>}
           </button>

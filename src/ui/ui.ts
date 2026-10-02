@@ -15,6 +15,7 @@ export type Dialog =
 const TAB_KEY = 'ytms.tab'
 
 export const tab = signal<Tab>(load<Tab>(TAB_KEY, 'tracks'))
+export const selectedTab = signal<Tab>(tab.value)
 export const dialog = signal<Dialog>(null)
 export const toast = signal<{ text: string; error?: boolean } | null>(null)
 
@@ -93,13 +94,28 @@ function nextFrame(): Promise<void> {
   return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
 }
 
+function visibleImagesDecoded(root: HTMLElement, limit: number): Promise<void> {
+  const height = window.innerHeight
+  const images = [...root.querySelectorAll('img')].filter(img => {
+    const r = img.getBoundingClientRect()
+    return r.bottom > 0 && r.top < height
+  })
+  const decoded = Promise.all(images.map(img => img.decode().catch(() => {})))
+  return Promise.race([decoded.then(() => {}), new Promise<void>(resolve => setTimeout(resolve, limit))])
+}
+
+let generation = 0
+
 export async function setTab(t: Tab): Promise<void> {
-  const from = tab.value
-  if (t === from) return
-  scrollByTab[from] = window.scrollY
-  restoring = scrollByTab[t] ?? 0
+  selectedTab.value = t
+  const current = ++generation
   for (const a of running) a.cancel()
   running = []
+  const from = tab.value
+  if (t === from) return
+  window.scrollTo(0, window.scrollY)
+  scrollByTab[from] = window.scrollY
+  restoring = scrollByTab[t] ?? 0
   const content = document.querySelector<HTMLElement>('.content')
   const swap = async () => {
     tab.value = t
@@ -119,9 +135,11 @@ export async function setTab(t: Tab): Promise<void> {
   } catch {
     return
   }
+  if (current !== generation) return
   await swap()
   await nextFrame()
-  if (!running.includes(out)) return
+  await visibleImagesDecoded(content, 150)
+  if (current !== generation) return
   const enter = content.animate([{ opacity: 0, transform: `translateX(${shift}px)` }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' })
   out.cancel()
   running = [enter]
