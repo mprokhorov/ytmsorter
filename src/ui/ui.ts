@@ -23,7 +23,6 @@ let toastTimer: ReturnType<typeof setTimeout> | undefined
 const TAB_ORDER: readonly Tab[] = ['tracks', 'music', 'archive']
 const scrollByTab: Partial<Record<Tab, number>> = {}
 
-export const supportsViewTransitions = typeof document !== 'undefined' && 'startViewTransition' in document
 
 function reducedMotion(): boolean {
   return typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -83,22 +82,49 @@ export function tapHandlers(action: () => void, allowInteractive = false) {
   }
 }
 
-export function setTab(t: Tab): void {
+let restoring = 0
+let running: Animation[] = []
+
+export function pendingScroll(): number {
+  return restoring
+}
+
+function nextFrame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+}
+
+export async function setTab(t: Tab): Promise<void> {
   const from = tab.value
   if (t === from) return
   scrollByTab[from] = window.scrollY
-  const apply = async () => {
+  restoring = scrollByTab[t] ?? 0
+  for (const a of running) a.cancel()
+  running = []
+  const content = document.querySelector<HTMLElement>('.content')
+  const swap = async () => {
     tab.value = t
     save(TAB_KEY, t)
     await afterRender()
-    window.scrollTo(0, scrollByTab[t] ?? 0)
+    window.scrollTo(0, restoring)
   }
-  if (!supportsViewTransitions || reducedMotion()) {
-    apply()
+  if (!content || typeof content.animate !== 'function' || reducedMotion()) {
+    await swap()
     return
   }
-  document.documentElement.dataset.nav = TAB_ORDER.indexOf(t) > TAB_ORDER.indexOf(from) ? 'forward' : 'back'
-  document.startViewTransition(apply)
+  const shift = TAB_ORDER.indexOf(t) > TAB_ORDER.indexOf(from) ? 28 : -28
+  const out = content.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-shift}px)` }], { duration: 120, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' })
+  running = [out]
+  try {
+    await out.finished
+  } catch {
+    return
+  }
+  await swap()
+  await nextFrame()
+  if (!running.includes(out)) return
+  const enter = content.animate([{ opacity: 0, transform: `translateX(${shift}px)` }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' })
+  out.cancel()
+  running = [enter]
 }
 
 export function showToast(text: string, error = false): void {

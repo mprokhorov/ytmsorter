@@ -17,6 +17,7 @@ interface Props {
 const PRELOAD_MARGIN = '150% 0px'
 const pending = new WeakMap<Element, () => void>()
 const scoped = new WeakMap<Element, IntersectionObserver>()
+const shown = new Set<string>()
 let viewport: IntersectionObserver | null = null
 
 function create(root: Element | null): IntersectionObserver {
@@ -63,8 +64,9 @@ export function Cover({ thumbs, shape, size, kind = 'track', eager }: Props) {
   const minWidth = shape === 'square' ? Math.ceil(size * 2 * (16 / 9)) : size * 2
   const sources = useMemo(() => coverSources(thumbs, minWidth), [thumbs, minWidth])
   const [index, setIndex] = useState(0)
-  const [near, setNear] = useState(!!eager)
-  const [loaded, setLoaded] = useState(false)
+  const [instant] = useState(() => !!sources[0] && shown.has(sources[0].url))
+  const [near, setNear] = useState(!!eager || instant)
+  const [loaded, setLoaded] = useState(instant)
   const box = useRef<HTMLDivElement>(null)
   const img = useRef<HTMLImageElement>(null)
   const source = sources[index]
@@ -78,14 +80,14 @@ export function Cover({ thumbs, shape, size, kind = 'track', eager }: Props) {
 
   useLayoutEffect(() => {
     const el = img.current
-    setLoaded(!!el && el.complete && el.naturalWidth > 0)
+    setLoaded((!!el && el.complete && el.naturalWidth > 0) || (!!source && shown.has(source.url)))
   }, [source?.url, near])
 
   const style = shape === 'square' ? { width: size, height: size } : { width: size, height: Math.round((size * 9) / 16) }
   const transform = shape === 'square' && source ? `scale(${squareScale(source.aspect)})` : undefined
 
   return (
-    <div ref={box} class={`cover cover--${shape}${loaded ? ' is-loaded' : ''}`} style={style}>
+    <div ref={box} class={`cover cover--${shape}${loaded ? ' is-loaded' : ''}${instant ? ' cover--instant' : ''}`} style={style}>
       {source ? (
         near && (
           <img
@@ -95,7 +97,10 @@ export function Cover({ thumbs, shape, size, kind = 'track', eager }: Props) {
             alt=""
             decoding="async"
             style={transform ? { transform } : undefined}
-            onLoad={() => setLoaded(true)}
+            onLoad={() => {
+              shown.add(source.url)
+              setLoaded(true)
+            }}
             onError={() => {
               setLoaded(false)
               setIndex(i => i + 1)

@@ -13,7 +13,7 @@ import { RowMenu } from './ui/RowMenu'
 import { SessionExpired, StorageBanner, Unconfigured, Welcome } from './ui/Screens'
 import { SettingsDialog } from './ui/SettingsDialog'
 import { TransferDialog } from './ui/TransferDialog'
-import { dialog, supportsViewTransitions, tab, toast } from './ui/ui'
+import { dialog, tab, toast } from './ui/ui'
 
 let started = false
 
@@ -75,7 +75,7 @@ export function App() {
       <InterruptedBanner />
       <Tabs />
       <div class="content">
-        <div key={tab.value} class={supportsViewTransitions ? 'panel' : 'panel panel--enter'}>
+        <div key={tab.value} class="panel">
           {tab.value === 'archive' ? <ArchiveView /> : <PlaylistView role={tab.value} />}
         </div>
       </div>

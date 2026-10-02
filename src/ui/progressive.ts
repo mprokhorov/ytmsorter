@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { scrollRoot } from './observe'
+import { pendingScroll } from './ui'
 
 const CHUNK = 120
 export const ROW_HEIGHT = 64
 
 export function useProgressive(total: number, rowHeight = ROW_HEIGHT) {
   const supported = typeof IntersectionObserver !== 'undefined'
-  const [limit, setLimit] = useState(() => (supported ? Math.max(CHUNK, Math.ceil((window.scrollY + window.innerHeight * 4) / rowHeight)) : Infinity))
+  const [limit, setLimit] = useState(() => (supported ? Math.max(CHUNK, Math.ceil((Math.max(window.scrollY, pendingScroll()) + window.innerHeight * 4) / rowHeight)) : Infinity))
   const sentinel = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
