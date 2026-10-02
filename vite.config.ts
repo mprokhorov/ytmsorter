@@ -11,7 +11,7 @@ export default defineConfig({
     preact(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['logo.svg', 'logo-touch-180.png'],
+      includeAssets: ['icon-3.svg', 'icon-3-touch-180.png'],
       manifest: {
         name: 'YTM Sorter',
         short_name: 'YTM Sorter',
@@ -23,9 +23,9 @@ export default defineConfig({
         start_url: '.',
         scope: '.',
         icons: [
-          { src: 'logo-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'logo-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'logo-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { src: 'icon-3-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icon-3-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icon-3-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
       workbox: {

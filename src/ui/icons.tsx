@@ -35,11 +35,7 @@ export function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
 export function Logo({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-      <circle cx="32" cy="32" r="32" fill="#f00" />
-      <circle cx="32" cy="32" r="20" fill="none" stroke="#000" stroke-width="2" />
-      <rect x="20" y="20.75" width="24" height="5" rx="2.5" fill="#fff" />
-      <rect x="23.5" y="29.25" width="17" height="5" rx="2.5" fill="#fff" />
-      <rect x="27" y="37.75" width="10" height="5" rx="2.5" fill="#fff" />
+      <path fill="#f00" fill-rule="evenodd" d="M0 32a32 32 0 1 0 64 0a32 32 0 1 0 -64 0zM15.275 32a16.725 16.725 0 1 0 33.45 0a16.725 16.725 0 1 0 -33.45 0zM16.725 32a15.275 15.275 0 1 0 30.55 0a15.275 15.275 0 1 0 -30.55 0zM26.4 25.6h11.2a1.4 1.4 0 0 1 0 2.8h-11.2a1.4 1.4 0 0 1 0 -2.8zM28.4 30.6h7.2a1.4 1.4 0 0 1 0 2.8h-7.2a1.4 1.4 0 0 1 0 -2.8zM30.4 35.6h3.2a1.4 1.4 0 0 1 0 2.8h-3.2a1.4 1.4 0 0 1 0 -2.8z" />
     </svg>
   )
 }
