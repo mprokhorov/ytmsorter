@@ -35,17 +35,11 @@ export function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
 export function Logo({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-      <defs>
-        <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#ff1f1f" />
-          <stop offset="1" stop-color="#d90000" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="16" fill="url(#logo-g)" />
-      <rect x="8" y="15" width="26" height="8" rx="4" fill="#fff" />
-      <rect x="8" y="28" width="20" height="8" rx="4" fill="#fff" opacity=".85" />
-      <rect x="8" y="41" width="13" height="8" rx="4" fill="#fff" opacity=".7" />
-      <path d="M43 12h14v10h-8v23a9.5 8.5 0 1 1-6-7.9V12z" fill="#fff" />
+      <circle cx="32" cy="32" r="32" fill="#f00" />
+      <circle cx="32" cy="32" r="20" fill="none" stroke="#000" stroke-width="2" />
+      <rect x="20" y="20.75" width="24" height="5" rx="2.5" fill="#fff" />
+      <rect x="23.5" y="29.25" width="17" height="5" rx="2.5" fill="#fff" />
+      <rect x="27" y="37.75" width="10" height="5" rx="2.5" fill="#fff" />
     </svg>
   )
 }
