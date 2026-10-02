@@ -38,3 +38,11 @@ export const TRACKS: [string, string, string] = ['трек', 'трека', 'тр
 export const VIDEOS: [string, string, string] = ['видео', 'видео', 'видео']
 export const MOVES: [string, string, string] = ['ход', 'хода', 'ходов']
 export const UNITS: [string, string, string] = ['единица', 'единицы', 'единиц']
+
+export function sentences(...parts: Array<string | false | null | undefined>): string {
+  return parts
+    .filter((p): p is string => !!p)
+    .map(p => p.trim().replace(/\.+$/, ''))
+    .filter(Boolean)
+    .join('. ')
+}

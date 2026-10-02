@@ -34,7 +34,7 @@ export function QuotaSummary({ cost, steps, perStep, label }: { cost: number; st
         <div class="alert alert--warn summary__alert">
           <Icon name="warning" size={18} />
           <span>
-            Квоты на сегодня хватит примерно на {num(affordable)} из {num(steps)}. Когда квота закончится, выполнение остановится — его можно будет продолжить после полуночи по тихоокеанскому времени.
+            Квоты на сегодня хватит примерно на {num(affordable)} из {num(steps)}. Когда квота закончится, выполнение остановится — его можно будет продолжить после полуночи по тихоокеанскому времени
           </span>
         </div>
       )}
@@ -49,7 +49,7 @@ export function ApplyGuard({ ids }: { ids: string[] }) {
     <div class="alert alert--lock">
       <Icon name="lock" size={18} />
       <span>
-        Запись в {locked.map(id => `«${playlistTitle(id) || id}»`).join(' и ')} не разрешена — это только просмотр плана. Разрешить запись можно в настройках.
+        Запись в {locked.map(id => `«${playlistTitle(id) || id}»`).join(' и ')} не разрешена — это только просмотр плана. Разрешить запись можно в настройках
       </span>
       <button class="btn btn--text" onClick={() => (dialog.value = { type: 'settings' })}>
         Настройки
@@ -101,7 +101,7 @@ export function PlanDialog({ role }: { role: Role }) {
       {plan.moves.length === 0 ? (
         <div class="done-state">
           <Icon name="check" size={40} />
-          <p>Плейлист уже отсортирован. Изменения не нужны.</p>
+          <p>Плейлист уже отсортирован. Изменения не нужны</p>
         </div>
       ) : (
         <>

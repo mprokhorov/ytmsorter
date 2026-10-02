@@ -36,7 +36,7 @@ export function PlanColumns({ rows, role }: { rows: readonly PlanRow[]; role: Ro
     <div class="plan-columns">
       <p class="plan-columns__legend">
         <i class="plan-columns__swatch" />
-        Перемещаются {num(moved)} из {num(rows.length)}. Остальные остаются на своих местах относительно друг друга.
+        Перемещаются {num(moved)} из {num(rows.length)}. Остальные остаются на своих местах относительно друг друга
       </p>
       <div class="plan-columns__head">
         <span>Было</span>

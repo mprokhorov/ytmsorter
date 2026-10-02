@@ -27,6 +27,6 @@ export function saveCritical(key: string, value: unknown): boolean {
   if (save(key, value)) return true
   for (const k of EVICTABLE_KEYS) save(k, null)
   if (save(key, value)) return true
-  storageProblem.value = 'Хранилище браузера переполнено — архив не удалось сохранить. Сделайте экспорт архива, чтобы ничего не потерять.'
+  storageProblem.value = 'Хранилище браузера переполнено — архив не удалось сохранить. Сделайте экспорт архива, чтобы ничего не потерять'
   return false
 }

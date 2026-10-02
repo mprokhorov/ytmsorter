@@ -38,7 +38,7 @@ export function listPlaylistItems(playlistId: string, onPage?: (loaded: number, 
 }
 
 function guard(playlistId: string) {
-  if (!isWritable(playlistId)) throw new ApiError(0, 'readOnly', 'Запись в этот плейлист не разрешена. Включите её в настройках.')
+  if (!isWritable(playlistId)) throw new ApiError(0, 'readOnly', 'Запись в этот плейлист не разрешена. Включите её в настройках')
 }
 
 export async function moveItem(playlistId: string, itemId: string, videoId: string, position: number): Promise<void> {

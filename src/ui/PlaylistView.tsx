@@ -57,7 +57,7 @@ export function PlaylistView({ role }: { role: Role }) {
       <section class="empty">
         <Icon name="tune" size={48} />
         <h2>Плейлист «{ROLE_LABEL[role]}» не выбран</h2>
-        <p>Укажите в настройках, какой из ваших плейлистов использовать.</p>
+        <p>Укажите в настройках, какой из ваших плейлистов использовать</p>
         <button class="btn btn--primary" onClick={() => (dialog.value = { type: 'settings' })}>
           Открыть настройки
         </button>

@@ -2,14 +2,14 @@ import { DAILY_QUOTA } from '../config'
 import { archive } from '../state/library'
 import { busy, loading, playlists, refreshAll, ROLES } from '../state/playlists'
 import { msUntilPacificMidnight, quota } from '../state/quota'
-import { duration, num } from './format'
+import { duration, num, sentences } from './format'
 import { Icon, Logo } from './icons'
 import { dialog, ROLE_LABEL, scrollToTop, setTab, tab, tapHandlers, type Tab } from './ui'
 
 function QuotaBadge() {
   const q = quota.value
   const pct = Math.min(100, (q.used / DAILY_QUOTA) * 100)
-  const title = `Потрачено квоты YouTube Data API за сегодня (по тихоокеанскому времени): ${num(q.used)} из ${num(DAILY_QUOTA)}. Сброс через ${duration(msUntilPacificMidnight())}.${q.exhausted ? ' API сообщил, что квота исчерпана.' : ''}`
+  const title = sentences(`Потрачено квоты YouTube Data API за сегодня (по тихоокеанскому времени): ${num(q.used)} из ${num(DAILY_QUOTA)}`, `Сброс через ${duration(msUntilPacificMidnight())}`, q.exhausted && 'API сообщил, что квота исчерпана')
   return (
     <div class={`quota${q.exhausted ? ' quota--exhausted' : ''}`} title={title}>
       <div class="quota__text">

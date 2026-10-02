@@ -3,9 +3,11 @@ import { dismissJob, forgetInterrupted, interrupted, job, stopJob, type JobState
 import { refreshAll, refreshRole } from '../state/playlists'
 import { msUntilPacificMidnight } from '../state/quota'
 import { Dialog } from './Dialog'
-import { duration, num } from './format'
+import { duration, num, sentences } from './format'
 import { Icon } from './icons'
 import { dialog, ROLE_LABEL } from './ui'
+
+const RESUME_NOTE = 'При продолжении плейлист будет загружен заново и план пересчитан'
 
 function jobTitle(j: JobState): string {
   return j.kind === 'sort' ? `Сортировка: ${ROLE_LABEL[j.roles[0]!]}` : 'Перенос между плейлистами'
@@ -64,27 +66,24 @@ export function JobDialog() {
         </div>
       </div>
       {j.current && !finished && <p class="progress__current">{j.current}</p>}
-      <p class="muted small">Потрачено квоты: {num(j.done * COST_WRITE)} ед.</p>
-      {j.phase === 'running' && <p class="muted small">Не закрывайте вкладку до завершения. Если закрыть — выполненные шаги сохранятся, остальное можно будет продолжить.</p>}
+      <p class="muted small">Потрачено квоты: {num(j.done * COST_WRITE)}</p>
+      {j.phase === 'running' && <p class="muted small">Не закрывайте вкладку до завершения. Если закрыть — выполненные шаги сохранятся, остальное можно будет продолжить</p>}
       {j.phase === 'done' && (
         <div class="alert alert--ok">
           <Icon name="check" size={18} />
-          <span>Готово. Плейлист перезагружен с сервера.</span>
+          <span>Готово. Плейлист перезагружен с сервера</span>
         </div>
       )}
       {j.phase === 'stopped' && (
         <div class="alert alert--warn">
           <Icon name="warning" size={18} />
-          <span>{j.error ?? 'Остановлено.'} При продолжении плейлист будет загружен заново и план пересчитан.</span>
+          <span>{sentences(j.error ?? 'Остановлено', RESUME_NOTE)}</span>
         </div>
       )}
       {j.phase === 'failed' && (
         <div class="alert alert--error">
           <Icon name="warning" size={18} />
-          <span>
-            {j.error}
-            {j.quota && ` До сброса квоты примерно ${duration(msUntilPacificMidnight())}.`} При продолжении плейлист будет загружен заново и план пересчитан.
-          </span>
+          <span>{sentences(j.error, j.quota && `До сброса квоты примерно ${duration(msUntilPacificMidnight())}`, RESUME_NOTE)}</span>
         </div>
       )}
     </Dialog>

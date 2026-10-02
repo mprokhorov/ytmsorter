@@ -32,16 +32,16 @@ export class ApiError extends Error {
 }
 
 const MESSAGES: Record<string, string> = {
-  quotaExceeded: 'Дневная квота YouTube Data API исчерпана. Она обновится в полночь по тихоокеанскому времени.',
-  dailyLimitExceeded: 'Дневная квота YouTube Data API исчерпана. Она обновится в полночь по тихоокеанскому времени.',
-  rateLimitExceeded: 'Слишком много запросов подряд. Попробуйте продолжить через минуту.',
-  manualSortRequired: 'У плейлиста не ручной порядок сортировки. Откройте плейлист на YouTube, выберите «Сортировка → Вручную» и повторите.',
-  playlistItemsNotAccessible: 'Нет прав на изменение этого плейлиста.',
-  playlistNotFound: 'Плейлист не найден.',
-  playlistItemNotFound: 'Элемент плейлиста не найден — вероятно, плейлист изменился. Обновите его и постройте план заново.',
-  videoNotFound: 'Видео не найдено.',
-  insufficientPermissions: 'Недостаточно прав: при входе нужно разрешить управление аккаунтом YouTube.',
-  network: 'Нет соединения с сервером.'
+  quotaExceeded: 'Дневная квота YouTube Data API исчерпана. Она обновится в полночь по тихоокеанскому времени',
+  dailyLimitExceeded: 'Дневная квота YouTube Data API исчерпана. Она обновится в полночь по тихоокеанскому времени',
+  rateLimitExceeded: 'Слишком много запросов подряд. Попробуйте продолжить через минуту',
+  manualSortRequired: 'У плейлиста не ручной порядок сортировки. Откройте плейлист на YouTube, выберите «Сортировка → Вручную» и повторите',
+  playlistItemsNotAccessible: 'Нет прав на изменение этого плейлиста',
+  playlistNotFound: 'Плейлист не найден',
+  playlistItemNotFound: 'Элемент плейлиста не найден — вероятно, плейлист изменился. Обновите его и постройте план заново',
+  videoNotFound: 'Видео не найдено',
+  insufficientPermissions: 'Недостаточно прав: при входе нужно разрешить управление аккаунтом YouTube',
+  network: 'Нет соединения с сервером'
 }
 
 export interface RequestOptions {
