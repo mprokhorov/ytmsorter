@@ -1,10 +1,12 @@
 import { useEffect } from 'preact/hooks'
 import { signOut } from '../auth/token'
+import { DAILY_QUOTA } from '../config'
 import type { Role } from '../domain/types'
 import { loadMyPlaylists, myPlaylists, myPlaylistsError, refreshRole, ROLES } from '../state/playlists'
+import { msUntilPacificMidnight, quota } from '../state/quota'
 import { isWritable, setPlaylist, setWritable, settings } from '../state/settings'
 import { Dialog } from './Dialog'
-import { count, ITEMS } from './format'
+import { count, duration, ITEMS, num, sentences } from './format'
 import { Icon } from './icons'
 import { dialog, ROLE_LABEL } from './ui'
 
@@ -60,6 +62,28 @@ function RoleSettings({ role }: { role: Role }) {
   )
 }
 
+function QuotaSettings() {
+  const q = quota.value
+  const pct = q.exhausted ? 100 : Math.min(100, (q.used / DAILY_QUOTA) * 100)
+  return (
+    <fieldset class="field">
+      <legend class="field__label">Квота YouTube Data API</legend>
+      <div class={`quota${q.exhausted ? ' quota--exhausted' : ''}`}>
+        <div class="quota__text">
+          <span>Потрачено сегодня</span>
+          <span>
+            {num(q.used)} из {num(DAILY_QUOTA)}
+          </span>
+        </div>
+        <div class="quota__bar">
+          <div style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+      <p class="field__hint">{sentences(q.exhausted && 'API сообщил, что квота исчерпана', `Сброс через ${duration(msUntilPacificMidnight())}, в полночь по тихоокеанскому времени`)}</p>
+    </fieldset>
+  )
+}
+
 export function SettingsDialog() {
   useEffect(() => {
     loadMyPlaylists()
@@ -99,6 +123,7 @@ export function SettingsDialog() {
       {ROLES.map(role => (
         <RoleSettings key={role} role={role} />
       ))}
+      <QuotaSettings />
       <div class="note">
         <Icon name="warning" size={18} />
         <span>

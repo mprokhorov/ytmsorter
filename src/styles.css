@@ -243,13 +243,8 @@ code {
 .quota {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 132px;
-  white-space: nowrap;
-  margin-right: 8px;
-  font-size: 12px;
+  gap: 6px;
   color: var(--text-2);
-  cursor: help;
 }
 
 .quota__text {
@@ -259,12 +254,8 @@ code {
   font-variant-numeric: tabular-nums;
 }
 
-.quota__label {
-  color: var(--text-3);
-}
-
 .quota__bar {
-  height: 3px;
+  height: 4px;
   border-radius: 2px;
   background: var(--surface-2);
   overflow: hidden;
@@ -686,15 +677,6 @@ code {
 }
 
 .empty,
-.done-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 72px 16px;
-  text-align: center;
-  color: var(--text-2);
-}
 
 .empty h2 {
   margin: 8px 0 0;
@@ -706,13 +688,7 @@ code {
   margin: 0 0 16px;
 }
 
-.done-state {
-  padding: 40px 16px;
-}
 
-.done-state .icon {
-  color: var(--ok);
-}
 
 .alert,
 .note,
@@ -1418,19 +1394,6 @@ code {
   .topbar {
     padding-right: max(8px, env(safe-area-inset-right));
     padding-left: max(12px, env(safe-area-inset-left));
-  }
-
-  .topbar__brand span {
-    display: none;
-  }
-
-  .quota {
-    min-width: 0;
-    margin-right: 4px;
-  }
-
-  .quota__label {
-    display: none;
   }
 
   .banner {
