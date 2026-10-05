@@ -56,7 +56,7 @@ export function JobDialog() {
     >
       <div class="progress">
         <div class="progress__bar">
-          <div class={`progress__fill progress__fill--${j.phase}`} style={{ width: `${pct}%` }} />
+          <div class={`progress__fill progress__fill--${j.phase}`} style={{ transform: `translateX(${pct - 100}%)` }} />
         </div>
         <div class="progress__meta">
           <span>

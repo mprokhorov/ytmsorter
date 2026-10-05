@@ -76,7 +76,7 @@ function QuotaSettings() {
           </span>
         </div>
         <div class="quota__bar">
-          <div style={{ width: `${pct}%` }} />
+          <div style={{ transform: `translateX(${pct - 100}%)` }} />
         </div>
       </div>
       <p class="field__hint">{sentences(q.exhausted && 'API сообщил, что квота исчерпана', `Сброс через ${duration(msUntilPacificMidnight())}, в полночь по тихоокеанскому времени`)}</p>

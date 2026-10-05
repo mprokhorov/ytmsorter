@@ -46,7 +46,7 @@ function Dialogs() {
 function Toast() {
   const t = toast.value
   if (!t) return null
-  return <div class={`toast${t.error ? ' toast--error' : ''}`}>{t.text}</div>
+  return <div class={`toast${t.error ? ' toast--error' : ''}${t.leaving ? ' toast--leaving' : ''}`}>{t.text}</div>
 }
 
 export function App() {

@@ -17,7 +17,7 @@ const TAB_KEY = 'ytms.tab'
 export const tab = signal<Tab>(load<Tab>(TAB_KEY, 'tracks'))
 export const selectedTab = signal<Tab>(tab.value)
 export const dialog = signal<Dialog>(null)
-export const toast = signal<{ text: string; error?: boolean } | null>(null)
+export const toast = signal<{ text: string; error?: boolean; leaving?: boolean } | null>(null)
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -140,7 +140,7 @@ export async function setTab(t: Tab): Promise<void> {
   await nextFrame()
   await visibleImagesDecoded(content, 150)
   if (current !== generation) return
-  const enter = content.animate([{ opacity: 0, transform: `translateX(${shift}px)` }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' })
+  const enter = content.animate([{ opacity: 0, transform: `translateX(${shift}px)` }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' })
   out.cancel()
   running = [enter]
 }
@@ -148,7 +148,13 @@ export async function setTab(t: Tab): Promise<void> {
 export function showToast(text: string, error = false): void {
   toast.value = { text, error }
   clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => (toast.value = null), error ? 8000 : 4000)
+  toastTimer = setTimeout(
+    () => {
+      toast.value = toast.value && { ...toast.value, leaving: true }
+      toastTimer = setTimeout(() => (toast.value = null), 200)
+    },
+    error ? 8000 : 4000
+  )
 }
 
 export function musicUrl(videoId: string): string {
