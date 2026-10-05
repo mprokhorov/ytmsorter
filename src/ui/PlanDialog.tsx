@@ -11,6 +11,7 @@ import { Dialog } from './Dialog'
 import { count, MOVES, num, plural, UNITS } from './format'
 import { Icon } from './icons'
 import { PlanColumns, type PlanRow } from './PlanView'
+import { Popup } from './Popup'
 import { dialog, ROLE_LABEL } from './ui'
 
 export function QuotaSummary({ cost, steps, perStep, label }: { cost: number; steps: number; perStep: number; label: string }) {
@@ -72,6 +73,13 @@ export function PlanDialog({ role }: { role: Role }) {
 
   if (!state) return null
   const close = () => (dialog.value = null)
+  if (plan.moves.length === 0) {
+    return (
+      <Popup icon="check" title="Уже отсортировано" action="Понятно" onAction={close} onClose={close}>
+        Плейлист «{playlistTitle(state.id) || ROLE_LABEL[role]}» уже в нужном порядке. Изменения не нужны
+      </Popup>
+    )
+  }
   const writable = isWritable(state.id)
   const cost = plan.moves.length * COST_WRITE
   const apply = () => {
@@ -88,28 +96,17 @@ export function PlanDialog({ role }: { role: Role }) {
       footer={
         <>
           <button class="btn btn--ghost" onClick={close}>
-            {plan.moves.length === 0 ? 'Закрыть' : 'Отмена'}
+            Отмена
           </button>
-          {plan.moves.length > 0 && (
-            <button class="btn btn--primary" disabled={!writable || busy.value} onClick={apply}>
-              Применить — {count(plan.moves.length, MOVES)}
-            </button>
-          )}
+          <button class="btn btn--primary" disabled={!writable || busy.value} onClick={apply}>
+            Применить — {count(plan.moves.length, MOVES)}
+          </button>
         </>
       }
     >
-      {plan.moves.length === 0 ? (
-        <div class="done-state">
-          <Icon name="check" size={40} />
-          <p>Плейлист уже отсортирован. Изменения не нужны</p>
-        </div>
-      ) : (
-        <>
-          <QuotaSummary cost={cost} steps={plan.moves.length} perStep={COST_WRITE} label={plural(plan.moves.length, MOVES)} />
-          <ApplyGuard ids={[state.id]} />
-          <PlanColumns rows={plan.rows} role={role} />
-        </>
-      )}
+      <QuotaSummary cost={cost} steps={plan.moves.length} perStep={COST_WRITE} label={plural(plan.moves.length, MOVES)} />
+      <ApplyGuard ids={[state.id]} />
+      <PlanColumns rows={plan.rows} role={role} />
     </Dialog>
   )
 }
